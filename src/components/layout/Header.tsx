@@ -53,29 +53,29 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string, isPremium: boolean) => {
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, isPremium: boolean) => {
     if (isPremium && subscription?.planType === 'Free') {
       e.preventDefault();
       setModalOpen(true);
-      if(mobileMenuOpen) setMobileMenuOpen(false);
-    } else {
-      router.push(href);
-      if(mobileMenuOpen) setMobileMenuOpen(false);
+    }
+    
+    if(mobileMenuOpen) {
+      setMobileMenuOpen(false);
     }
   };
 
   const NavItems = () => (
     <>
       {navLinks.map((link) => (
-        <a 
+        <Link 
           key={link.href} 
           href={link.href}
-          onClick={(e) => handleLinkClick(e, link.href, link.premium)}
+          onClick={(e) => handleLinkClick(e, link.premium)}
           className="flex items-center p-2 rounded-md hover:bg-secondary"
         >
           <link.icon className="mr-2 h-4 w-4" />
           {link.label}
-        </a>
+        </Link>
       ))}
     </>
   );
@@ -94,13 +94,13 @@ const Header = () => {
           <nav className="hidden items-center gap-1 lg:flex">
              {navLinks.map((link) => (
               <Button key={link.href} asChild variant="ghost">
-                <a 
+                <Link
                   href={link.href}
-                  onClick={(e) => handleLinkClick(e, link.href, link.premium)}
+                  onClick={(e) => handleLinkClick(e, link.premium)}
                 >
                   <link.icon className="mr-2 h-4 w-4" />
                   {link.label}
-                </a>
+                </Link>
               </Button>
             ))}
           </nav>

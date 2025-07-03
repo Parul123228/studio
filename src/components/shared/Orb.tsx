@@ -34,8 +34,8 @@ const Orb: React.FC<OrbProps> = ({ isMobile }) => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     currentMount.appendChild(renderer.domElement);
     
-    // Optimization: Reduced segments from 32 to 24 for better performance
-    const geometry = new THREE.SphereGeometry(1, 24, 24);
+    // Optimization: Reduced segments from 32 to 16 for better performance
+    const geometry = new THREE.SphereGeometry(1, 16, 16);
     const material = new THREE.MeshStandardMaterial({
       color: 0x00fff7,
       wireframe: true,
@@ -46,8 +46,8 @@ const Orb: React.FC<OrbProps> = ({ isMobile }) => {
     scene.add(sphere);
 
     const particlesGeometry = new THREE.BufferGeometry();
-    // Optimization: Reduced particle count from 200 to 150
-    const particlesCnt = 150;
+    // Optimization: Reduced particle count from 150 to 100
+    const particlesCnt = 100;
     const posArray = new Float32Array(particlesCnt * 3);
     for(let i = 0; i < particlesCnt * 3; i++) {
         posArray[i] = (Math.random() - 0.5) * 5;
