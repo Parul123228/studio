@@ -1,12 +1,15 @@
 import { suggestToolsAction } from "@/app/actions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "../ui/badge";
-import { BrainCircuit, Mic, Palette } from "lucide-react";
+import { BrainCircuit, Mic, Palette, Film, Music, Code } from "lucide-react";
 
 const iconMap: { [key: string]: React.ElementType } = {
   "AI": BrainCircuit,
   "Art": Palette,
   "Speech": Mic,
+  "Video": Film,
+  "Music": Music,
+  "Code": Code,
   "default": BrainCircuit,
 };
 
@@ -14,7 +17,7 @@ const TrendingToolsSection = async () => {
   const tools = await suggestToolsAction();
 
   return (
-    <section id="tools" className="w-full">
+    <section className="w-full">
       <div className="text-center mb-12">
         <h2 className="text-4xl md:text-5xl font-bold mb-4 glowing-text-secondary">Trending Tools</h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">

@@ -7,6 +7,7 @@ import Typewriter from "@/components/shared/Typewriter";
 import { motion } from "framer-motion";
 import { ArrowDown, Sparkles } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
+import Link from 'next/link';
 
 const Orb = dynamic(() => import('@/components/shared/Orb'), { 
   ssr: false,
@@ -36,16 +37,20 @@ const HeroSection = () => {
           Designed by Parul | Transforming Creativity with Next-Gen AI
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Button size="lg" className="relative overflow-hidden group glowing-border bg-primary/20 text-primary-foreground hover:bg-primary/30">
-            <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#00FFF7_0%,#9D00FF_50%,#00FFF7_100%)]" />
-            <span className="relative z-10 flex items-center gap-2">
-              <Sparkles className="h-5 w-5"/>
-              Generate AI Art
-            </span>
+          <Button size="lg" className="relative overflow-hidden group glowing-border bg-primary/20 text-primary-foreground hover:bg-primary/30" asChild>
+            <Link href="/generate">
+              <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#00FFF7_0%,#9D00FF_50%,#00FFF7_100%)]" />
+              <span className="relative z-10 flex items-center gap-2">
+                <Sparkles className="h-5 w-5"/>
+                Generate AI Art
+              </span>
+            </Link>
           </Button>
-          <Button size="lg" variant="outline" className="glowing-border hover:bg-primary/10">
-            See Features
-            <ArrowDown className="ml-2 h-5 w-5 transition-transform group-hover:translate-y-1" />
+          <Button size="lg" variant="outline" className="glowing-border hover:bg-primary/10" asChild>
+            <Link href="/features">
+              See Features
+              <ArrowDown className="ml-2 h-5 w-5 transition-transform group-hover:translate-y-1" />
+            </Link>
           </Button>
         </div>
       </motion.div>

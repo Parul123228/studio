@@ -12,9 +12,9 @@ import Logo from "@/components/shared/Logo";
 import ThemeToggle from "@/components/shared/ThemeToggle";
 
 const navLinks = [
-  { href: "#tools", label: "Tools" },
-  { href: "#generate", label: "Generate" },
-  { href: "#features", label: "Features" },
+  { href: "/tools", label: "Tools" },
+  { href: "/generate", label: "Generate" },
+  { href: "/features", label: "Features" },
 ];
 
 const Header = () => {

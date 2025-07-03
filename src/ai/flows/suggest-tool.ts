@@ -18,7 +18,7 @@ export type SuggestToolInput = z.infer<typeof SuggestToolInputSchema>;
 const SuggestToolOutputSchema = z.object({
   toolName: z.string().describe('The name of the suggested AI tool.'),
   description: z.string().describe('A short description of the AI tool.'),
-  category: z.string().describe('The category of the tool (e.g., AI, Art, Speech).'),
+  category: z.string().describe('The category of the tool (e.g., AI, Art, Speech, Video, Music, Code).'),
 });
 export type SuggestToolOutput = z.infer<typeof SuggestToolOutputSchema>;
 
@@ -35,6 +35,7 @@ const prompt = ai.definePrompt({
   A user has the following need: {{{userNeeds}}}
 
   Suggest a trending AI tool that can help the user with this need. Provide a short description of the tool and its category.
+  The category must be one of the following: AI, Art, Speech, Video, Music, Code.
   Your response must be a single, valid JSON object with the following fields: "toolName", "description", and "category". Do not include any other text, explanation, or markdown formatting.
   `,
 });

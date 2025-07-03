@@ -85,7 +85,7 @@ const ImageGeneratorSection = () => {
   };
 
   return (
-    <section id="generate" className="w-full">
+    <section className="w-full">
       <div className="text-center mb-12">
         <h2 className="text-4xl md:text-5xl font-bold mb-4 glowing-text-accent">Create with AI</h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">

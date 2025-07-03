@@ -5,7 +5,14 @@ import { suggestTool, SuggestToolOutput } from '@/ai/flows/suggest-tool';
 
 export async function suggestToolsAction(): Promise<SuggestToolOutput[]> {
   try {
-    const topics = ['photo realistic images', 'logos and icons', 'sci-fi concept art'];
+    const topics = [
+      'photo realistic images',
+      'logos and icons',
+      'sci-fi concept art',
+      'ai-powered video creation',
+      'unique music composition',
+      'automated code generation',
+    ];
     const results = await Promise.allSettled(
       topics.map(topic => suggestTool({ userNeeds: `A tool for ${topic}` }))
     );

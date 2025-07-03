@@ -12,9 +12,33 @@ const socialLinks = [
 ];
 
 const footerLinks = [
-  { title: "Platform", links: ["Generate", "Tools", "Features", "Pricing"] },
-  { title: "Company", links: ["About Us", "Careers", "Contact", "Blog"] },
-  { title: "Resources", links: ["Documentation", "API", "Support", "Status"] },
+  { 
+    title: "Platform", 
+    links: [
+      { label: "Generate", href: "/generate" },
+      { label: "Tools", href: "/tools" },
+      { label: "Features", href: "/features" },
+      { label: "Pricing", href: "#" }
+    ] 
+  },
+  { 
+    title: "Company", 
+    links: [
+      { label: "About Us", href: "#" },
+      { label: "Careers", href: "#" },
+      { label: "Contact", href: "#" },
+      { label: "Blog", href: "#" }
+    ] 
+  },
+  { 
+    title: "Resources", 
+    links: [
+      { label: "Documentation", href: "#" },
+      { label: "API", href: "#" },
+      { label: "Support", href: "#" },
+      { label: "Status", href: "#" }
+    ] 
+  },
 ];
 
 const Footer = () => {
@@ -43,9 +67,9 @@ const Footer = () => {
               <h3 className="font-headline text-base font-semibold text-foreground">{section.title}</h3>
               <ul className="mt-4 space-y-2">
                 {section.links.map((link) => (
-                  <li key={link}>
-                    <Link href="#" className="text-sm text-muted-foreground transition-colors hover:text-primary hover:glowing-text">
-                        {link}
+                  <li key={link.label}>
+                    <Link href={link.href} className="text-sm text-muted-foreground transition-colors hover:text-primary hover:glowing-text">
+                        {link.label}
                     </Link>
                   </li>
                 ))}
