@@ -152,11 +152,10 @@ const PlansSection = () => {
             <div className="flex flex-col items-center justify-center space-y-4 py-4">
               <div className="p-2 border rounded-lg">
                 <Image
-                  src="https://placehold.co/200x200.png"
+                  src="/upi-qr-code.png"
                   width={200}
                   height={200}
                   alt="UPI QR Code"
-                  data-ai-hint="qr code"
                 />
               </div>
               <p className="text-sm text-muted-foreground">
