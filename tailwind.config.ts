@@ -93,10 +93,10 @@ export default {
         },
         'text-glow': {
           '0%, 100%': {
-            textShadow: '0 0 2px hsl(var(--primary)), 0 0 5px hsl(var(--primary)), 0 0 10px hsl(var(--primary))',
+            textShadow: '0 0 4px hsla(var(--primary)/0.5), 0 0 8px hsla(var(--primary)/0.4)',
           },
           '50%': {
-            textShadow: '0 0 5px hsl(var(--primary)), 0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary))',
+            textShadow: '0 0 8px hsla(var(--primary)/0.7), 0 0 16px hsla(var(--primary)/0.6)',
           },
         },
         flicker: {
@@ -113,7 +113,7 @@ export default {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'neon-pulse': 'neon-pulse 2s infinite ease-in-out',
-        'text-glow': 'text-glow 1.5s infinite ease-in-out',
+        'text-glow': 'text-glow 2.5s infinite ease-in-out',
         flicker: 'flicker 1s infinite',
         'background-pan': 'background-pan 15s linear infinite',
       },

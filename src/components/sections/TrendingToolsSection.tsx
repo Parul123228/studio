@@ -1,15 +1,17 @@
 import { suggestToolsAction } from "@/app/actions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "../ui/badge";
-import { BrainCircuit, Mic, Palette, Film, Music, Code } from "lucide-react";
+import { BrainCircuit, Mic, Palette, Film, Music, Code, ScanText, FileText, Bot } from "lucide-react";
 
 const iconMap: { [key: string]: React.ElementType } = {
-  "AI": BrainCircuit,
+  "AI": Bot,
   "Art": Palette,
   "Speech": Mic,
   "Video": Film,
   "Music": Music,
   "Code": Code,
+  "Text": FileText,
+  "Detection": ScanText,
   "default": BrainCircuit,
 };
 

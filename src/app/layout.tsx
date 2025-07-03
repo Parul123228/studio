@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/lib/theme-provider';
 import { Toaster } from "@/components/ui/toaster"
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import { AuthProvider } from '@/contexts/auth-context';
 
 const orbitron = Orbitron({
   subsets: ['latin'],
@@ -18,8 +19,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'LuminousAI | Future Intelligence',
-  description: 'Transforming Creativity with Next-Gen AI, by Parul',
+  title: 'NextGenAI | by Parul',
+  description: 'Futuristic AI for the New Generation',
 };
 
 export default function RootLayout({
@@ -32,7 +33,7 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
       </head>
       <body className={`${orbitron.variable} ${poppins.variable} font-body antialiased`}>
         <ThemeProvider
@@ -41,12 +42,14 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="relative min-h-screen w-full">
-            <Header />
-            <main>{children}</main>
-            <Footer />
-          </div>
-          <Toaster />
+          <AuthProvider>
+            <div className="relative flex flex-col min-h-screen w-full">
+              <Header />
+              <main className="flex-grow">{children}</main>
+              <Footer />
+            </div>
+            <Toaster />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

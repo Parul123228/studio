@@ -1,24 +1,34 @@
 "use client"
 
-import { Github, Linkedin, Twitter } from "lucide-react";
+import { Github, Instagram, Mail, Twitter } from "lucide-react";
 import Link from "next/link";
 import Logo from "@/components/shared/Logo";
 import { Button } from "../ui/button";
 
 const socialLinks = [
+  { icon: Instagram, href: "https://instagram.com/ig_parul_", name: "Instagram" },
+  { icon: Mail, href: "mailto:wantedgamingyt12@gmail.com", name: "Email" },
   { icon: Twitter, href: "https://twitter.com", name: "Twitter" },
   { icon: Github, href: "https://github.com", name: "GitHub" },
-  { icon: Linkedin, href: "https://linkedin.com", name: "LinkedIn" },
 ];
 
 const footerLinks = [
   { 
-    title: "Platform", 
+    title: "AI Tools", 
     links: [
-      { label: "Generate", href: "/generate" },
-      { label: "Tools", href: "/tools" },
-      { label: "Features", href: "/features" },
-      { label: "Pricing", href: "#" }
+      { label: "Art Generator", href: "/generate" },
+      { label: "Voice Generator", href: "/voice-generator" },
+      { label: "AI Chatbot", href: "/chatbot" },
+      { label: "Smart Summarizer", href: "/summarizer" },
+    ] 
+  },
+  { 
+    title: "More Tools", 
+    links: [
+      { label: "AI Detector", href: "/ai-detector" },
+      { label: "Auto-Coder", href: "/auto-coder" },
+      { label: "Trending", href: "/tools" },
+      { label: "All Features", href: "/features" },
     ] 
   },
   { 
@@ -27,35 +37,26 @@ const footerLinks = [
       { label: "About Us", href: "#" },
       { label: "Careers", href: "#" },
       { label: "Contact", href: "#" },
-      { label: "Blog", href: "#" }
-    ] 
-  },
-  { 
-    title: "Resources", 
-    links: [
-      { label: "Documentation", href: "#" },
-      { label: "API", href: "#" },
-      { label: "Support", href: "#" },
-      { label: "Status", href: "#" }
+      { label: "Admin", href: "/admin" }
     ] 
   },
 ];
 
 const Footer = () => {
   return (
-    <footer className="glass-card mt-auto border-t border-primary/10">
+    <footer className="glass-card mt-auto border-t border-primary/10 sticky bottom-0 z-40">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4 lg:grid-cols-5">
           <div className="md:col-span-1 lg:col-span-2">
             <Logo />
             <p className="mt-4 text-sm text-muted-foreground">
-              Transforming Creativity with Next-Gen AI.
+              Futuristic AI for the New Generation.
             </p>
             <div className="mt-6 flex space-x-4">
               {socialLinks.map((social) => (
                 <Button key={social.name} asChild variant="ghost" size="icon" className="group">
                   <Link href={social.href} target="_blank" rel="noopener noreferrer">
-                    <social.icon className="h-5 w-5 text-muted-foreground transition-all group-hover:text-primary group-hover:scale-110 group-hover:animate-pulse" />
+                    <social.icon className="h-5 w-5 text-muted-foreground transition-all duration-300 group-hover:text-primary group-hover:scale-125 group-hover:shadow-[0_0_15px_hsl(var(--primary))] motion-safe:group-hover:animate-pulse" />
                     <span className="sr-only">{social.name}</span>
                   </Link>
                 </Button>
@@ -78,9 +79,8 @@ const Footer = () => {
           ))}
         </div>
         <div className="mt-12 border-t border-primary/10 pt-8 text-center">
-          <p className="text-sm text-muted-foreground">
-            Built by Parul — Powered by 
-            <span className="animate-background-pan bg-gradient-to-r from-electric-blue via-magenta to-cyber-purple bg-[200%_auto] bg-clip-text text-transparent"> Firebase & Genkit</span>
+          <p className="text-lg text-muted-foreground animate-text-glow font-bold">
+            Built by <span className="text-primary glowing-text">Parul</span>
           </p>
         </div>
       </div>

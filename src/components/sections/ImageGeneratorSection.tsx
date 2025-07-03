@@ -29,7 +29,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { generateImageAction } from "@/app/actions";
 import { Loader, Wand2 } from "lucide-react";
-import { Skeleton } from "../ui/skeleton";
+import { AnimatePresence, motion } from "framer-motion";
 
 const formSchema = z.object({
   prompt: z.string().min(10, "Prompt must be at least 10 characters long."),
@@ -40,13 +40,25 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 type GeneratedImage = {
+  id: number;
   prompt: string;
   url: string;
 };
 
+const initialImages = [
+  { id: 1, prompt: "A futuristic city skyline at dusk", url: "https://placehold.co/1024x1024.png", hint: "futuristic city" },
+  { id: 2, prompt: "A mystical forest with glowing mushrooms", url: "https://placehold.co/1024x1024.png", hint: "glowing forest" },
+  { id: 3, prompt: "A robot reading a book in a library", url: "https://placehold.co/1024x1024.png", hint: "robot library" },
+  { id: 4, prompt: "An astronaut floating in space with nebulae", url: "https://placehold.co/1024x1024.png", hint: "astronaut space" },
+  { id: 5, prompt: "A dragon flying over a mountain range", url: "https://placehold.co/1024x1024.png", hint: "dragon mountain" },
+  { id: 6, prompt: "A serene beach with bioluminescent waves", url: "https://placehold.co/1024x1024.png", hint: "bioluminescent beach" },
+];
+
 const ImageGeneratorSection = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
+  const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>(
+    initialImages.map(img => ({...img, url: img.url}))
+  );
   const { toast } = useToast();
 
   const form = useForm<FormValues>({
@@ -60,7 +72,6 @@ const ImageGeneratorSection = () => {
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setIsLoading(true);
-    setGeneratedImages([]);
     
     const result = await generateImageAction({
         prompt: data.prompt,
@@ -74,7 +85,7 @@ const ImageGeneratorSection = () => {
         variant: "destructive",
       });
     } else {
-      setGeneratedImages([{ prompt: data.prompt, url: result.output.media }]);
+      setGeneratedImages(prev => [{ id: Date.now(), prompt: data.prompt, url: result.output!.media }, ...prev]);
       toast({
         title: "Image Generated Successfully!",
         description: "Your creation has come to life.",
@@ -95,7 +106,7 @@ const ImageGeneratorSection = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <Card className="lg:col-span-1 glass-card p-6 border-accent/30">
+        <Card className="lg:col-span-1 glass-card p-6 border-accent/30 h-fit sticky top-24">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
@@ -185,37 +196,45 @@ const ImageGeneratorSection = () => {
         </Card>
 
         <div className="lg:col-span-2">
-            <Card className="glass-card w-full min-h-[500px] lg:min-h-full p-4 flex items-center justify-center border-dashed border-primary/20">
-            {isLoading ? (
-                <div className="grid grid-cols-1 gap-4 w-full h-full">
-                    <Skeleton className="w-full aspect-square bg-primary/10" />
-                </div>
-            ) : generatedImages.length > 0 ? (
-                <div className="grid grid-cols-1 gap-4 w-full">
+            <AnimatePresence>
+                <div className="grid grid-cols-2 gap-4">
+                    {isLoading && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="col-span-2"
+                        >
+                            <Card className="glass-card w-full aspect-square p-4 flex items-center justify-center border-dashed border-primary/20">
+                                <div className="text-center">
+                                    <Loader className="mx-auto h-16 w-16 text-primary/50 mb-4 animate-spin"/>
+                                    <h3 className="text-xl font-headline mb-2">Generating masterpiece...</h3>
+                                </div>
+                            </Card>
+                        </motion.div>
+                    )}
                     {generatedImages.map((image, index) => (
-                    <div key={index} className="group relative overflow-hidden rounded-lg">
+                    <motion.div 
+                        key={image.id} 
+                        className="group relative overflow-hidden rounded-lg aspect-square glowing-border"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: index * 0.05 }}
+                    >
                         <Image
                             src={image.url}
                             alt={image.prompt}
-                            width={1024}
-                            height={1024}
+                            width={512}
+                            height={512}
                             className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                            data-ai-hint="futuristic cyberpunk"
+                            data-ai-hint={(initialImages.find(i => i.id === image.id)?.hint) || "ai art"}
                         />
-                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                        <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                             <p className="text-white text-sm">{image.prompt}</p>
                         </div>
-                    </div>
+                    </motion.div>
                     ))}
                 </div>
-            ) : (
-                <div className="text-center text-muted-foreground">
-                    <Wand2 className="mx-auto h-16 w-16 text-primary/50 mb-4"/>
-                    <h3 className="text-xl font-headline mb-2">Your creations will appear here</h3>
-                    <p>Fill out the form and let our AI bring your ideas to life.</p>
-                </div>
-            )}
-            </Card>
+            </AnimatePresence>
         </div>
       </div>
     </section>

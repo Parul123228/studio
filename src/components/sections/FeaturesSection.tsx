@@ -36,7 +36,7 @@ const features = [
 
 const FeaturesSection = () => {
   return (
-    <section className="w-full">
+    <section id="features" className="w-full py-16 sm:py-24">
       <div className="text-center mb-12">
         <h2 className="text-4xl md:text-5xl font-bold mb-4 glowing-text-primary">Platform Features</h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
