@@ -10,6 +10,7 @@ import { AuthProvider } from '@/contexts/auth-context';
 const orbitron = Orbitron({
   subsets: ['latin'],
   variable: '--font-orbitron',
+  weight: ['400', '700', '900'],
 });
 
 const poppins = Poppins({
@@ -30,11 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
-      </head>
+      <head />
       <body className={`${orbitron.variable} ${poppins.variable} font-body antialiased`}>
         <ThemeProvider
           attribute="class"

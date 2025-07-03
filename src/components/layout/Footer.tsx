@@ -44,7 +44,7 @@ const footerLinks = [
 
 const Footer = () => {
   return (
-    <footer className="glass-card mt-auto border-t border-primary/10 sticky bottom-0 z-40">
+    <footer className="glass-card mt-auto border-t border-primary/10">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4 lg:grid-cols-5">
           <div className="md:col-span-1 lg:col-span-2">
