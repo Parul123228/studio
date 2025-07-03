@@ -71,6 +71,10 @@ export async function approveUserAction(requestId: string) {
 
 // Existing actions...
 export async function suggestToolsAction(): Promise<SuggestToolOutput[]> {
+  if (!process.env.GOOGLE_API_KEY || process.env.GOOGLE_API_KEY.includes('YOUR_')) {
+    console.warn("Google API Key not configured. Skipping tool suggestions.");
+    return [];
+  }
   try {
     const topics = [
       'photo realistic images',
@@ -105,10 +109,13 @@ export async function suggestToolsAction(): Promise<SuggestToolOutput[]> {
 }
 
 export async function generateImageAction(input: GenerateImageInput): Promise<{ output: GenerateImageOutput | null, error: string | null }> {
+    if (!process.env.GOOGLE_API_KEY || process.env.GOOGLE_API_KEY.includes('YOUR_')) {
+        console.warn("Google API Key not configured. Returning a placeholder image for development.");
+        await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate generation time
+        return { output: { media: 'https://placehold.co/1024x1024.png' }, error: null };
+    }
+
     try {
-        if (!process.env.GOOGLE_API_KEY) {
-          return { output: null, error: 'The GOOGLE_API_KEY is not configured correctly. Please check your .env file.'}
-        }
         const output = await generateImage(input);
         if (!output || !output.media) {
             return { output: null, error: 'Image generation failed. Please try again.' };
@@ -122,6 +129,12 @@ export async function generateImageAction(input: GenerateImageInput): Promise<{ 
 }
 
 export async function generateSpeechAction(input: GenerateSpeechInput): Promise<{ output: GenerateSpeechOutput | null, error: string | null }> {
+    if (!process.env.GOOGLE_API_KEY || process.env.GOOGLE_API_KEY.includes('YOUR_')) {
+        const error = 'AI features are disabled because the Google API Key is not configured.';
+        console.warn(error);
+        return { output: null, error };
+    }
+
     try {
         const output = await generateSpeech(input);
         if (!output || !output.media) {
@@ -131,6 +144,6 @@ export async function generateSpeechAction(input: GenerateSpeechInput): Promise<
     } catch (error) {
         console.error("Error generating speech:", error);
         const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred during speech generation.';
-        return { output, error: null };
+        return { output: null, error: errorMessage };
     }
 }
