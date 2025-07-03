@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import Logo from "@/components/shared/Logo";
 import ThemeToggle from "@/components/shared/ThemeToggle";
 import { useAuth } from "@/contexts/auth-context";
@@ -158,6 +158,8 @@ const Header = () => {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-full max-w-[300px] bg-background/95 backdrop-blur-xl">
+                  <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
+                  <SheetDescription className="sr-only">A list of navigation links and user actions.</SheetDescription>
                   <div className="flex flex-col p-6 pt-12 h-full">
                      <div className="mb-8">
                        <Logo />
