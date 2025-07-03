@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -68,6 +69,7 @@ const PlansSection = () => {
   const { toast } = useToast();
 
   const handleChoosePlan = (plan: (typeof plans)[0]) => {
+    if (plan.disabled) return;
     setSelectedPlan(plan);
     setDialogOpen(true);
   };
@@ -124,7 +126,7 @@ const PlansSection = () => {
                   className="w-full"
                   disabled={plan.disabled}
                   variant={plan.name === "Premium" ? "default" : "outline"}
-                  onClick={() => !plan.disabled && handleChoosePlan(plan)}
+                  onClick={() => handleChoosePlan(plan)}
                 >
                   {plan.cta}
                 </Button>
