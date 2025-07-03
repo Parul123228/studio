@@ -156,6 +156,13 @@ const PlansSection = () => {
                   width={200}
                   height={200}
                   alt="UPI QR Code"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.onerror = null; // Prevent infinite loop
+                    target.src = 'https://placehold.co/200x200.png';
+                    target.alt = 'QR Code placeholder - Add upi-qr-code.png to /public folder';
+                  }}
+                  data-ai-hint="qr code"
                 />
               </div>
               <p className="text-sm text-muted-foreground">
