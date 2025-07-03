@@ -3,7 +3,6 @@
 import React from "react";
 import Link from "next/link";
 import { LogOut, Menu, UserCircle, Bot, Image as ImageIcon, LayoutDashboard, User, Rocket } from "lucide-react";
-import { signOut } from "firebase/auth";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,7 +16,6 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from 
 import Logo from "@/components/shared/Logo";
 import ThemeToggle from "@/components/shared/ThemeToggle";
 import { useAuth } from "@/contexts/auth-context";
-import { auth, isFirebaseConfigured } from "@/lib/firebase";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useRouter } from "next/navigation";
 
@@ -37,8 +35,7 @@ const Header = () => {
   const router = useRouter();
 
   const handleLogout = async () => {
-    if (!auth) return;
-    await signOut(auth);
+    // Auth is disabled, so just redirect to home
     router.push('/');
   };
   
@@ -124,7 +121,7 @@ const Header = () => {
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleLogout} disabled={!isFirebaseConfigured}>
+                  <DropdownMenuItem onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>
@@ -132,10 +129,10 @@ const Header = () => {
               </DropdownMenu>
             ) : (
               <div className="hidden md:flex items-center gap-2">
-                <Button variant="ghost" asChild disabled={!isFirebaseConfigured}>
+                <Button variant="ghost" asChild>
                   <Link href="/login">Login</Link>
                 </Button>
-                <Button asChild disabled={!isFirebaseConfigured}>
+                <Button asChild>
                   <Link href="/signup">Sign Up</Link>
                 </Button>
               </div>
@@ -161,10 +158,10 @@ const Header = () => {
                     </nav>
                     {!user && (
                       <div className="mt-auto flex flex-col gap-2">
-                         <Button variant="outline" asChild disabled={!isFirebaseConfigured}>
+                         <Button variant="outline" asChild>
                             <Link href="/login" onClick={() => setMobileMenuOpen(false)}>Login</Link>
                          </Button>
-                         <Button asChild disabled={!isFirebaseConfigured}>
+                         <Button asChild>
                             <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>Sign Up</Link>
                          </Button>
                       </div>

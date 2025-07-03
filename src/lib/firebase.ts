@@ -14,7 +14,10 @@ const firebaseConfig = {
 let app: FirebaseApp | null = null;
 let auth: Auth | null = null;
 let db: Firestore | null = null;
-let isFirebaseConfigured = false;
+
+// This variable is no longer needed, but we keep the logic to
+// initialize Firebase if the keys are provided in the future.
+let isFirebaseConfigured = false; 
 
 if (firebaseConfig.apiKey && firebaseConfig.authDomain && firebaseConfig.projectId) {
   try {
@@ -28,4 +31,4 @@ if (firebaseConfig.apiKey && firebaseConfig.authDomain && firebaseConfig.project
   }
 }
 
-export { app, auth, db, isFirebaseConfigured };
+export { app, auth, db };
