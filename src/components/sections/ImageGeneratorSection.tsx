@@ -26,9 +26,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { generateImageAction } from "@/app/actions";
-import { Loader, Wand2 } from "lucide-react";
+import { Loader, Wand2, Download, Save, ZoomIn } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
 const formSchema = z.object({
@@ -94,6 +99,13 @@ const ImageGeneratorSection = () => {
     
     setIsLoading(false);
   };
+  
+  const handleSave = () => {
+    toast({
+        title: "Coming Soon!",
+        description: "The ability to save images to your profile is coming soon."
+    })
+  }
 
   return (
     <section className="w-full">
@@ -220,7 +232,7 @@ const ImageGeneratorSection = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: index * 0.05 }}
                     >
-                        <Image
+                         <Image
                             src={image.url}
                             alt={image.prompt}
                             width={512}
@@ -228,8 +240,34 @@ const ImageGeneratorSection = () => {
                             className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                             data-ai-hint={(initialImages.find(i => i.id === image.id)?.hint) || "ai art"}
                         />
-                        <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                            <p className="text-white text-sm">{image.prompt}</p>
+                        <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-2">
+                            <div className="flex justify-end gap-1">
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <Button size="icon" variant="ghost" className="text-white h-8 w-8 hover:bg-white/20 hover:text-white">
+                                            <ZoomIn className="h-4 w-4" />
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="max-w-3xl p-0 bg-transparent border-0">
+                                        <Image
+                                            src={image.url}
+                                            alt={image.prompt}
+                                            width={1024}
+                                            height={1024}
+                                            className="w-full h-auto rounded-lg"
+                                        />
+                                    </DialogContent>
+                                </Dialog>
+                                <Button asChild size="icon" variant="ghost" className="text-white h-8 w-8 hover:bg-white/20 hover:text-white">
+                                    <a href={image.url} download={`${image.prompt.slice(0, 30).replace(/\s/g, '_') || 'ai-generated-image'}.png`}>
+                                        <Download className="h-4 w-4" />
+                                    </a>
+                                </Button>
+                                <Button onClick={handleSave} size="icon" variant="ghost" className="text-white h-8 w-8 hover:bg-white/20 hover:text-white">
+                                    <Save className="h-4 w-4" />
+                                </Button>
+                            </div>
+                            <p className="text-white text-sm line-clamp-2">{image.prompt}</p>
                         </div>
                     </motion.div>
                     ))}
