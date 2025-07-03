@@ -43,7 +43,7 @@ const Orb = () => {
 
       // Particles
       const particlesGeometry = new THREE.BufferGeometry();
-      const particlesCnt = 500;
+      const particlesCnt = 200;
       const posArray = new Float32Array(particlesCnt * 3);
       for(let i = 0; i < particlesCnt * 3; i++) {
           posArray[i] = (Math.random() - 0.5) * 5

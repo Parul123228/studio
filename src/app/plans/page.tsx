@@ -48,7 +48,8 @@ export default function PlansPage() {
   const handleChoosePlan = (planName: string) => {
     // In a real app, this would redirect to a checkout page.
     // For now, it will alert the user with payment instructions.
-    alert(`To get the ${planName} plan, please pay the respective amount to our UPI ID: your-upi-id@ok.
+    alert(`To get the ${planName} plan, please pay the respective amount to our UPI ID: khanparul79@ybl
+You can use GPay, PhonePe, or Paytm.
 After payment, go to your profile and submit the transaction ID for verification.`);
   };
 
