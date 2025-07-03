@@ -40,6 +40,9 @@ export async function suggestToolsAction(): Promise<SuggestToolOutput[]> {
 
 export async function generateImageAction(input: GenerateImageInput): Promise<{ output: GenerateImageOutput | null, error: string | null }> {
     try {
+        if (!process.env.GOOGLE_API_KEY) {
+          return { output: null, error: 'The GOOGLE_API_KEY is not configured correctly. Please check your .env file.'}
+        }
         const output = await generateImage(input);
         if (!output || !output.media) {
             return { output: null, error: 'Image generation failed. Please try again.' };
