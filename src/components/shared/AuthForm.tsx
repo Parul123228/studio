@@ -11,8 +11,7 @@ import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
 } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
-import { auth, db, isFirebaseConfigured } from "@/lib/firebase";
+import { auth, isFirebaseConfigured } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -63,7 +62,7 @@ export default function AuthForm({ type }: AuthFormProps) {
   const onSubmit = async (values: z.infer<typeof form.control.getValues>) => {
     setIsLoading(true);
 
-    if (!isFirebaseConfigured || !auth || !db) {
+    if (!isFirebaseConfigured || !auth) {
       toast({
         title: "Configuration Error",
         description: "Firebase is not configured. Please contact the site administrator.",
@@ -79,13 +78,7 @@ export default function AuthForm({ type }: AuthFormProps) {
         toast({ title: "Login Successful", description: "Welcome back!" });
         router.push("/");
       } else if (type === "signup") {
-        const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-        // Create a free plan for the new user
-        await setDoc(doc(db, "subscriptions", userCredential.user.uid), {
-          userId: userCredential.user.uid,
-          planType: "Free",
-          paymentStatus: "verified",
-        });
+        await createUserWithEmailAndPassword(auth, values.email, values.password);
         toast({ title: "Signup Successful", description: "Welcome to NextGenAI!" });
         router.push("/");
       } else if (type === "forgot-password") {

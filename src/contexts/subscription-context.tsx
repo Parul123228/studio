@@ -1,38 +1,20 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { useAuth } from './auth-context';
-import { getUserSubscription, Subscription } from '@/lib/firestore';
+import { createContext, useContext, ReactNode } from 'react';
+
+// This is a placeholder context.
+// All subscription-related logic has been removed to simplify the app.
+// You can re-implement this later with a real subscription system.
 
 interface SubscriptionContextType {
-  subscription: Subscription | null;
+  subscription: null;
   loading: boolean;
 }
 
-const SubscriptionContext = createContext<SubscriptionContextType>({ subscription: null, loading: true });
+const SubscriptionContext = createContext<SubscriptionContextType>({ subscription: null, loading: false });
 
 export function SubscriptionProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
-  const [subscription, setSubscription] = useState<Subscription | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (user) {
-      setLoading(true);
-      getUserSubscription(user.uid).then(sub => {
-        setSubscription(sub);
-        setLoading(false);
-      }).catch(() => {
-        setLoading(false);
-      });
-    } else {
-      setSubscription(null);
-      setLoading(false);
-    }
-  }, [user]);
-
-  const value = { subscription, loading };
-  
+  const value = { subscription: null, loading: false };
   return <SubscriptionContext.Provider value={value}>{children}</SubscriptionContext.Provider>;
 }
 

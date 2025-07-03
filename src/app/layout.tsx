@@ -6,7 +6,6 @@ import { Toaster } from "@/components/ui/toaster"
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { AuthProvider } from '@/contexts/auth-context';
-import { SubscriptionProvider } from '@/contexts/subscription-context';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -34,14 +33,12 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            <SubscriptionProvider>
               <div className="relative flex flex-col min-h-screen w-full">
                 <Header />
                 <main className="flex-grow">{children}</main>
                 <Footer />
               </div>
               <Toaster />
-            </SubscriptionProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

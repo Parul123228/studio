@@ -20,24 +20,20 @@ import { useAuth } from "@/contexts/auth-context";
 import { auth, isFirebaseConfigured } from "@/lib/firebase";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useRouter } from "next/navigation";
-import { useSubscription } from "@/contexts/subscription-context";
-import MembershipModal from "../shared/MembershipModal";
 
 const navLinks = [
-  { href: "/generate", label: "Art Generator", icon: ImageIcon, premium: false },
-  { href: "/chatbot", label: "AI Chatbot", icon: Bot, premium: true },
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, premium: true },
-  { href: "/discover", label: "Discover", icon: Rocket, premium: true },
-  { href: "/plans", label: "Plans", icon: User, premium: false },
+  { href: "/generate", label: "Art Generator", icon: ImageIcon },
+  { href: "/chatbot", label: "AI Chatbot", icon: Bot },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/discover", label: "Discover", icon: Rocket },
+  { href: "/plans", label: "Plans", icon: User },
 ];
 
 const Header = () => {
   const [scrolled, setScrolled] = React.useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-  const [modalOpen, setModalOpen] = React.useState(false);
   
   const { user } = useAuth();
-  const { subscription } = useSubscription();
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -54,12 +50,7 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, isPremium: boolean) => {
-    if (isPremium && subscription?.planType === 'Free') {
-      e.preventDefault();
-      setModalOpen(true);
-    }
-    
+  const handleLinkClick = () => {
     if(mobileMenuOpen) {
       setMobileMenuOpen(false);
     }
@@ -71,7 +62,7 @@ const Header = () => {
         <Link 
           key={link.href} 
           href={link.href}
-          onClick={(e) => handleLinkClick(e, link.premium)}
+          onClick={handleLinkClick}
           className="flex items-center p-2 rounded-md hover:bg-secondary"
         >
           <link.icon className="mr-2 h-4 w-4" />
@@ -97,7 +88,7 @@ const Header = () => {
               <Button key={link.href} asChild variant="ghost">
                 <Link
                   href={link.href}
-                  onClick={(e) => handleLinkClick(e, link.premium)}
+                  onClick={handleLinkClick}
                 >
                   <link.icon className="mr-2 h-4 w-4" />
                   {link.label}
@@ -185,7 +176,6 @@ const Header = () => {
           </div>
         </div>
       </header>
-      <MembershipModal open={modalOpen} onOpenChange={setModalOpen} />
     </>
   );
 };
