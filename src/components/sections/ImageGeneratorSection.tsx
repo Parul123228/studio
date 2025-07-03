@@ -29,6 +29,9 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
@@ -118,94 +121,96 @@ const ImageGeneratorSection = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <Card className="lg:col-span-1 glass-card p-6 border-accent/30">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FormField
-                control={form.control}
-                name="prompt"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-lg font-headline">Your Prompt</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="e.g., A glowing jellyfish floating in a futuristic city"
-                        className="min-h-[120px] glass-card !bg-background/30 focus:border-accent"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="style"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-lg font-headline">Style</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+        <div className="lg:col-span-1 p-0">
+          <Card className="glass-card p-6 border-accent/30">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <FormField
+                  control={form.control}
+                  name="prompt"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-lg font-headline">Your Prompt</FormLabel>
                       <FormControl>
-                        <SelectTrigger className="glass-card !bg-background/30 focus:border-accent">
-                          <SelectValue placeholder="Select a style" />
-                        </SelectTrigger>
+                        <Textarea
+                          placeholder="e.g., A glowing jellyfish floating in a futuristic city"
+                          className="min-h-[120px] glass-card !bg-background/30 focus:border-accent"
+                          {...field}
+                        />
                       </FormControl>
-                      <SelectContent className="glass-card">
-                        <SelectItem value="Cyberpunk">Cyberpunk</SelectItem>
-                        <SelectItem value="Dreamy">Dreamy</SelectItem>
-                        <SelectItem value="Oil Paint">Oil Paint</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="size"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-lg font-headline">Aspect Ratio</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className="grid grid-cols-3 gap-4"
-                      >
-                        {["1:1", "9:16", "4:3"].map((size) => (
-                          <FormItem key={size}>
-                            <FormControl>
-                              <RadioGroupItem value={size} id={size} className="sr-only" />
-                            </FormControl>
-                            <Label htmlFor={size} className="block w-full p-4 text-center rounded-lg border-2 border-input cursor-pointer transition-all glass-card !bg-background/30 hover:border-accent has-[:checked]:border-accent has-[:checked]:glowing-border has-[:checked]:text-accent">
-                              {size}
-                            </Label>
-                          </FormItem>
-                        ))}
-                      </RadioGroup>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              
-              <Button type="submit" disabled={isLoading} className="w-full text-lg py-6 glowing-border bg-accent/20 text-accent-foreground hover:bg-accent/30">
-                {isLoading ? (
-                  <>
-                    <Loader className="mr-2 h-5 w-5 animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <Wand2 className="mr-2 h-5 w-5" />
-                    Generate
-                  </>
-                )}
-              </Button>
-            </form>
-          </Form>
-        </Card>
+                <FormField
+                  control={form.control}
+                  name="style"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-lg font-headline">Style</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="glass-card !bg-background/30 focus:border-accent">
+                            <SelectValue placeholder="Select a style" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="glass-card">
+                          <SelectItem value="Cyberpunk">Cyberpunk</SelectItem>
+                          <SelectItem value="Dreamy">Dreamy</SelectItem>
+                          <SelectItem value="Oil Paint">Oil Paint</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="size"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-lg font-headline">Aspect Ratio</FormLabel>
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          className="grid grid-cols-3 gap-4"
+                        >
+                          {["1:1", "9:16", "4:3"].map((size) => (
+                            <FormItem key={size}>
+                              <FormControl>
+                                <RadioGroupItem value={size} id={size} className="sr-only" />
+                              </FormControl>
+                              <Label htmlFor={size} className="block w-full p-4 text-center rounded-lg border-2 border-input cursor-pointer transition-all glass-card !bg-background/30 hover:border-accent has-[:checked]:border-accent has-[:checked]:glowing-border has-[:checked]:text-accent">
+                                {size}
+                              </Label>
+                            </FormItem>
+                          ))}
+                        </RadioGroup>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                
+                <Button type="submit" disabled={isLoading} className="w-full text-lg py-6 glowing-border bg-accent/20 text-accent-foreground hover:bg-accent/30">
+                  {isLoading ? (
+                    <>
+                      <Loader className="mr-2 h-5 w-5 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Wand2 className="mr-2 h-5 w-5" />
+                      Generate
+                    </>
+                  )}
+                </Button>
+              </form>
+            </Form>
+          </Card>
+        </div>
 
         <div className="lg:col-span-2">
             <AnimatePresence>
@@ -249,6 +254,10 @@ const ImageGeneratorSection = () => {
                                         </Button>
                                     </DialogTrigger>
                                     <DialogContent className="max-w-3xl p-0 bg-transparent border-0">
+                                        <DialogHeader className="sr-only">
+                                          <DialogTitle>Zoomed Image</DialogTitle>
+                                          <DialogDescription>{image.prompt}</DialogDescription>
+                                        </DialogHeader>
                                         <Image
                                             src={image.url}
                                             alt={image.prompt}
