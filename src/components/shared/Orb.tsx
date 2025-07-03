@@ -5,13 +5,13 @@ import * as THREE from 'three';
 
 const Orb = () => {
   const mountRef = useRef<HTMLDivElement>(null);
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
 
   useEffect(() => {
-    if (!mountRef.current || rendererRef.current) return;
+    if (!mountRef.current) return;
 
+    let animationFrameId: number;
     const currentMount = mountRef.current;
-    
+
     // Scene
     const scene = new THREE.Scene();
 
@@ -20,12 +20,17 @@ const Orb = () => {
     camera.position.z = 2.5;
 
     // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    currentMount.appendChild(renderer.domElement);
-    rendererRef.current = renderer;
-
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      currentMount.appendChild(renderer.domElement);
+    } catch (error) {
+      console.error("THREE.WebGLRenderer initialization failed:", error);
+      return;
+    }
+    
     // Orb
     const geometry = new THREE.SphereGeometry(1, 32, 32);
     const material = new THREE.MeshStandardMaterial({
@@ -64,19 +69,18 @@ const Orb = () => {
     // Animation
     const clock = new THREE.Clock();
     const animate = () => {
+      animationFrameId = requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
       sphere.rotation.y = .5 * elapsedTime;
       sphere.rotation.x = .3 * elapsedTime;
       particlesMesh.rotation.y = -.1 * elapsedTime;
-
       renderer.render(scene, camera);
-      requestAnimationFrame(animate);
     };
     animate();
 
     // Resize handler
     const handleResize = () => {
-      if (currentMount) {
+      if (currentMount && renderer) {
         camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
@@ -85,12 +89,20 @@ const Orb = () => {
     window.addEventListener('resize', handleResize);
 
     return () => {
+        cancelAnimationFrame(animationFrameId);
         window.removeEventListener('resize', handleResize);
-        if (currentMount && rendererRef.current) {
-            currentMount.removeChild(rendererRef.current.domElement);
-        }
+        
+        // Dispose of Three.js objects to prevent memory leaks
+        geometry.dispose();
+        material.dispose();
+        particlesGeometry.dispose();
+        particlesMaterial.dispose();
+        
         renderer.dispose();
-        rendererRef.current = null;
+        
+        if (currentMount && renderer.domElement.parentNode === currentMount) {
+            currentMount.removeChild(renderer.domElement);
+        }
     };
   }, []);
 
