@@ -7,7 +7,6 @@ import * as z from "zod";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -113,16 +112,15 @@ const ImageGeneratorSection = () => {
   return (
     <section className="w-full">
       <div className="text-center mb-12">
-        <h2 className="text-4xl md:text-5xl font-bold mb-4 glowing-text-accent">Create with AI</h2>
+        <h2 className="text-4xl md:text-5xl font-bold mb-4">Create with AI</h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Bring your imagination to life. Describe anything you can think of.
         </p>
-        <div className="mt-4 inline-block glowing-underline-short bg-accent shadow-accent/50" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1 p-0">
-          <Card className="glass-card p-6 border-accent/30">
+          <Card className="p-6">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <FormField
@@ -130,11 +128,11 @@ const ImageGeneratorSection = () => {
                   name="prompt"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-lg font-headline">Your Prompt</FormLabel>
+                      <FormLabel className="text-lg">Your Prompt</FormLabel>
                       <FormControl>
                         <Textarea
                           placeholder="e.g., A glowing jellyfish floating in a futuristic city"
-                          className="min-h-[120px] glass-card !bg-background/30 focus:border-accent"
+                          className="min-h-[120px] focus:border-primary"
                           {...field}
                         />
                       </FormControl>
@@ -148,14 +146,14 @@ const ImageGeneratorSection = () => {
                   name="style"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-lg font-headline">Style</FormLabel>
+                      <FormLabel className="text-lg">Style</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger className="glass-card !bg-background/30 focus:border-accent">
+                          <SelectTrigger className="focus:border-primary">
                             <SelectValue placeholder="Select a style" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="glass-card">
+                        <SelectContent>
                           <SelectItem value="Cyberpunk">Cyberpunk</SelectItem>
                           <SelectItem value="Dreamy">Dreamy</SelectItem>
                           <SelectItem value="Oil Paint">Oil Paint</SelectItem>
@@ -171,7 +169,7 @@ const ImageGeneratorSection = () => {
                   name="size"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-lg font-headline">Aspect Ratio</FormLabel>
+                      <FormLabel className="text-lg">Aspect Ratio</FormLabel>
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
@@ -183,7 +181,7 @@ const ImageGeneratorSection = () => {
                               <FormControl>
                                 <RadioGroupItem value={size} id={size} className="sr-only" />
                               </FormControl>
-                              <Label htmlFor={size} className="block w-full p-4 text-center rounded-lg border-2 border-input cursor-pointer transition-all glass-card !bg-background/30 hover:border-accent has-[:checked]:border-accent has-[:checked]:glowing-border has-[:checked]:text-accent">
+                              <Label htmlFor={size} className="block w-full p-4 text-center rounded-lg border-2 border-input cursor-pointer transition-all hover:border-primary has-[:checked]:border-primary has-[:checked]:text-primary">
                                 {size}
                               </Label>
                             </FormItem>
@@ -194,7 +192,7 @@ const ImageGeneratorSection = () => {
                   )}
                 />
                 
-                <Button type="submit" disabled={isLoading} className="w-full text-lg py-6 glowing-border bg-accent/20 text-accent-foreground hover:bg-accent/30">
+                <Button type="submit" disabled={isLoading} className="w-full text-lg py-6">
                   {isLoading ? (
                     <>
                       <Loader className="mr-2 h-5 w-5 animate-spin" />
@@ -221,10 +219,10 @@ const ImageGeneratorSection = () => {
                             animate={{ opacity: 1, scale: 1 }}
                             className="col-span-2"
                         >
-                            <Card className="glass-card w-full aspect-square p-4 flex items-center justify-center border-dashed border-primary/20">
+                            <Card className="w-full aspect-square p-4 flex items-center justify-center border-dashed">
                                 <div className="text-center">
-                                    <Loader className="mx-auto h-16 w-16 text-primary/50 mb-4 animate-spin"/>
-                                    <h3 className="text-xl font-headline mb-2">Generating masterpiece...</h3>
+                                    <Loader className="mx-auto h-16 w-16 text-muted-foreground mb-4 animate-spin"/>
+                                    <h3 className="text-xl mb-2">Generating masterpiece...</h3>
                                 </div>
                             </Card>
                         </motion.div>
@@ -232,7 +230,7 @@ const ImageGeneratorSection = () => {
                     {generatedImages.map((image, index) => (
                     <motion.div 
                         key={image.id} 
-                        className="group relative overflow-hidden rounded-lg aspect-square glowing-border"
+                        className="group relative overflow-hidden rounded-lg aspect-square border"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: index * 0.05 }}

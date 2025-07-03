@@ -17,25 +17,21 @@ const footerLinks = [
     title: "AI Tools", 
     links: [
       { label: "Art Generator", href: "/generate" },
-      { label: "Voice Generator", href: "/voice-generator" },
       { label: "AI Chatbot", href: "/chatbot" },
-      { label: "Smart Summarizer", href: "/summarizer" },
     ] 
   },
   { 
-    title: "More Tools", 
+    title: "Account", 
     links: [
-      { label: "AI Detector", href: "/ai-detector" },
-      { label: "Auto-Coder", href: "/auto-coder" },
-      { label: "Trending", href: "/tools" },
-      { label: "All Features", href: "/features" },
+      { label: "Dashboard", href: "/dashboard" },
+      { label: "Profile", href: "/profile" },
+      { label: "Plans", href: "/plans" },
     ] 
   },
   { 
     title: "Company", 
     links: [
       { label: "About Us", href: "#" },
-      { label: "Careers", href: "#" },
       { label: "Contact", href: "#" },
       { label: "Admin", href: "/admin" }
     ] 
@@ -44,7 +40,7 @@ const footerLinks = [
 
 const Footer = () => {
   return (
-    <footer className="glass-card mt-auto border-t border-primary/10">
+    <footer className="border-t">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4 lg:grid-cols-5">
           <div className="md:col-span-1 lg:col-span-2">
@@ -56,7 +52,7 @@ const Footer = () => {
               {socialLinks.map((social) => (
                 <Button key={social.name} asChild variant="ghost" size="icon" className="group">
                   <Link href={social.href} target="_blank" rel="noopener noreferrer">
-                    <social.icon className="h-5 w-5 text-muted-foreground transition-all duration-300 group-hover:text-primary group-hover:scale-125 group-hover:shadow-[0_0_15px_hsl(var(--primary))] motion-safe:group-hover:animate-pulse" />
+                    <social.icon className="h-5 w-5 text-muted-foreground transition-all duration-300 group-hover:text-primary" />
                     <span className="sr-only">{social.name}</span>
                   </Link>
                 </Button>
@@ -65,11 +61,11 @@ const Footer = () => {
           </div>
           {footerLinks.map((section) => (
             <div key={section.title}>
-              <h3 className="font-headline text-base font-semibold text-foreground">{section.title}</h3>
+              <h3 className="text-base font-semibold text-foreground">{section.title}</h3>
               <ul className="mt-4 space-y-2">
                 {section.links.map((link) => (
                   <li key={link.label}>
-                    <Link href={link.href} className="text-sm text-muted-foreground transition-colors hover:text-primary hover:glowing-text">
+                    <Link href={link.href} className="text-sm text-muted-foreground transition-colors hover:text-primary">
                         {link.label}
                     </Link>
                   </li>
@@ -78,9 +74,9 @@ const Footer = () => {
             </div>
           ))}
         </div>
-        <div className="mt-12 border-t border-primary/10 pt-8 text-center">
-          <p className="text-lg text-muted-foreground animate-text-glow font-bold">
-            Built by <span className="text-primary glowing-text">Parul</span>
+        <div className="mt-12 border-t pt-8 text-center">
+          <p className="text-lg text-muted-foreground font-bold">
+            Built by <span className="text-primary">Parul</span>
           </p>
         </div>
       </div>

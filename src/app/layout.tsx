@@ -1,22 +1,16 @@
 import type { Metadata } from 'next';
-import { Orbitron, Poppins } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/lib/theme-provider';
 import { Toaster } from "@/components/ui/toaster"
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { AuthProvider } from '@/contexts/auth-context';
+import { SubscriptionProvider } from '@/contexts/subscription-context';
 
-const orbitron = Orbitron({
+const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-orbitron',
-  weight: ['400', '700', '900'],
-});
-
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['400', '600'],
-  variable: '--font-poppins',
+  variable: '--font-inter',
 });
 
 export const metadata: Metadata = {
@@ -32,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
-      <body className={`${orbitron.variable} ${poppins.variable} font-body antialiased`}>
+      <body className={`${inter.variable} font-body antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -40,12 +34,14 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            <div className="relative flex flex-col min-h-screen w-full">
-              <Header />
-              <main className="flex-grow">{children}</main>
-              <Footer />
-            </div>
-            <Toaster />
+            <SubscriptionProvider>
+              <div className="relative flex flex-col min-h-screen w-full">
+                <Header />
+                <main className="flex-grow">{children}</main>
+                <Footer />
+              </div>
+              <Toaster />
+            </SubscriptionProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

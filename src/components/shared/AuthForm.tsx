@@ -11,7 +11,8 @@ import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
 } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -67,7 +68,13 @@ export default function AuthForm({ type }: AuthFormProps) {
         toast({ title: "Login Successful", description: "Welcome back!" });
         router.push("/");
       } else if (type === "signup") {
-        await createUserWithEmailAndPassword(auth, values.email, values.password);
+        const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+        // Create a free plan for the new user
+        await setDoc(doc(db, "subscriptions", userCredential.user.uid), {
+          userId: userCredential.user.uid,
+          planType: "Free",
+          paymentStatus: "verified",
+        });
         toast({ title: "Signup Successful", description: "Welcome to NextGenAI!" });
         router.push("/");
       } else if (type === "forgot-password") {
@@ -92,9 +99,9 @@ export default function AuthForm({ type }: AuthFormProps) {
   };
 
   return (
-    <Card className="w-full max-w-md glass-card glowing-border">
+    <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle className="text-3xl font-headline text-center glowing-text-primary">{titles[type].title}</CardTitle>
+        <CardTitle className="text-3xl text-center">{titles[type].title}</CardTitle>
         <CardDescription className="text-center">{titles[type].description}</CardDescription>
       </CardHeader>
       <CardContent>
@@ -137,7 +144,7 @@ export default function AuthForm({ type }: AuthFormProps) {
                 )}
               />
             )}
-            <Button type="submit" disabled={isLoading} className="w-full text-lg py-6 glowing-border">
+            <Button type="submit" disabled={isLoading} className="w-full text-lg py-6">
               {isLoading && <Loader className="mr-2 h-5 w-5 animate-spin" />}
               {type === "login" && "Login"}
               {type === "signup" && "Create Account"}
