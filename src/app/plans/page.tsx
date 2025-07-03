@@ -87,7 +87,7 @@ After payment, go to your profile and submit the transaction ID for verification
                 className="w-full" 
                 disabled={plan.disabled}
                 variant={plan.name === 'Premium' ? 'default' : 'outline'}
-                onClick={() => !plan.disabled && handleChoosePlan(plan.name)}
+                onClick={() => handleChoosePlan(plan.name)}
               >
                 {plan.cta}
               </Button>
