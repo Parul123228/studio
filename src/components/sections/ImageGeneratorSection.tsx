@@ -106,7 +106,7 @@ const ImageGeneratorSection = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <Card className="lg:col-span-1 glass-card p-6 border-accent/30 h-fit sticky top-24">
+        <Card className="lg:col-span-1 glass-card p-6 border-accent/30">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
