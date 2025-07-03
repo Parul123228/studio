@@ -1,5 +1,4 @@
 'use server';
-import 'dotenv/config';
 
 import { generateImage, GenerateImageInput, GenerateImageOutput } from '@/ai/flows/generate-image';
 import { generateSpeech, GenerateSpeechInput, GenerateSpeechOutput } from '@/ai/flows/generate-speech';
