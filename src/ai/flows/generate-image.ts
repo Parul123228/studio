@@ -11,7 +11,6 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import wav from 'wav';
 
 const GenerateImageInputSchema = z.object({
   prompt: z.string().describe('The prompt to use to generate the image.'),

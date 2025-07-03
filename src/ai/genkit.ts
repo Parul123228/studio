@@ -1,6 +1,10 @@
 import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/googleai';
 
+if (!process.env.GOOGLE_API_KEY) {
+  throw new Error('GOOGLE_API_KEY environment variable not found. Please add it to your .env file.');
+}
+
 export const ai = genkit({
   plugins: [
     googleAI({
