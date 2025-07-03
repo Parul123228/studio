@@ -3,7 +3,11 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-const Orb = () => {
+interface OrbProps {
+  isMobile: boolean;
+}
+
+const Orb: React.FC<OrbProps> = ({ isMobile }) => {
   const mountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -12,26 +16,26 @@ const Orb = () => {
 
     let animationFrameId: number;
 
-    // Scene, Camera, and Renderer
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
     camera.position.z = 2.5;
     
     let renderer: THREE.WebGLRenderer;
     try {
-        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        // Optimization: Disable antialiasing on mobile for better performance
+        renderer = new THREE.WebGLRenderer({ antialias: !isMobile, alpha: true });
     } catch (error) {
         console.error("Failed to create WebGLRenderer:", error);
-        // If renderer fails to initialize, we can't proceed.
         return;
     }
     
     renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    // Optimization: Cap pixel ratio to 2 to prevent performance issues on high-DPI screens
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     currentMount.appendChild(renderer.domElement);
     
-    // Orb
-    const geometry = new THREE.SphereGeometry(1, 32, 32);
+    // Optimization: Reduced segments from 32 to 24 for better performance
+    const geometry = new THREE.SphereGeometry(1, 24, 24);
     const material = new THREE.MeshStandardMaterial({
       color: 0x00fff7,
       wireframe: true,
@@ -41,9 +45,9 @@ const Orb = () => {
     const sphere = new THREE.Mesh(geometry, material);
     scene.add(sphere);
 
-    // Particles
     const particlesGeometry = new THREE.BufferGeometry();
-    const particlesCnt = 200;
+    // Optimization: Reduced particle count from 200 to 150
+    const particlesCnt = 150;
     const posArray = new Float32Array(particlesCnt * 3);
     for(let i = 0; i < particlesCnt * 3; i++) {
         posArray[i] = (Math.random() - 0.5) * 5;
@@ -56,7 +60,6 @@ const Orb = () => {
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particlesMesh);
 
-    // Lights
     const pointLight1 = new THREE.PointLight(0x00fff7, 100, 100);
     pointLight1.position.set(2, 2, 2);
     scene.add(pointLight1);
@@ -65,7 +68,6 @@ const Orb = () => {
     pointLight2.position.set(-2, -2, -2);
     scene.add(pointLight2);
     
-    // Animation
     const clock = new THREE.Clock();
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
@@ -77,7 +79,6 @@ const Orb = () => {
     };
     animate();
 
-    // Resize handler
     const handleResize = () => {
       if (currentMount) {
         camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
@@ -87,17 +88,14 @@ const Orb = () => {
     };
     window.addEventListener('resize', handleResize);
 
-    // Cleanup function
     return () => {
         cancelAnimationFrame(animationFrameId);
         window.removeEventListener('resize', handleResize);
         
-        // Remove canvas from DOM
         if (renderer.domElement.parentNode === currentMount) {
             currentMount.removeChild(renderer.domElement);
         }
 
-        // Dispose of scene objects
         scene.traverse(object => {
           if (object instanceof THREE.Mesh || object instanceof THREE.Points) {
             if (object.geometry) {
@@ -115,7 +113,7 @@ const Orb = () => {
         
         renderer.dispose();
     };
-  }, []);
+  }, [isMobile]);
 
   return <div ref={mountRef} className="absolute inset-0 z-0 h-full w-full opacity-30" />;
 };

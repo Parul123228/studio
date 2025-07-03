@@ -7,11 +7,14 @@ import { Sparkles, UserPlus } from 'lucide-react';
 import Orb from "@/components/shared/Orb";
 import Typewriter from "@/components/shared/Typewriter";
 import Link from 'next/link';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const HeroSection = () => {
+  const isMobile = useIsMobile();
+
   return (
     <section className="relative w-full h-screen flex items-center justify-center overflow-hidden">
-      <Orb />
+      <Orb isMobile={isMobile} />
       <div className="absolute inset-0 -z-10 h-full w-full bg-background bg-[radial-gradient(circle_500px_at_50%_200px,#0d253a,transparent)]"></div>
       
       <div
