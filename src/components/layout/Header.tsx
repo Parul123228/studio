@@ -17,7 +17,7 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from 
 import Logo from "@/components/shared/Logo";
 import ThemeToggle from "@/components/shared/ThemeToggle";
 import { useAuth } from "@/contexts/auth-context";
-import { auth } from "@/lib/firebase";
+import { auth, isFirebaseConfigured } from "@/lib/firebase";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useRouter } from "next/navigation";
 import { useSubscription } from "@/contexts/subscription-context";
@@ -41,6 +41,7 @@ const Header = () => {
   const router = useRouter();
 
   const handleLogout = async () => {
+    if (!auth) return;
     await signOut(auth);
     router.push('/');
   };
@@ -132,7 +133,7 @@ const Header = () => {
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleLogout}>
+                  <DropdownMenuItem onClick={handleLogout} disabled={!isFirebaseConfigured}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>
@@ -140,10 +141,10 @@ const Header = () => {
               </DropdownMenu>
             ) : (
               <div className="hidden md:flex items-center gap-2">
-                <Button variant="ghost" asChild>
+                <Button variant="ghost" asChild disabled={!isFirebaseConfigured}>
                   <Link href="/login">Login</Link>
                 </Button>
-                <Button asChild>
+                <Button asChild disabled={!isFirebaseConfigured}>
                   <Link href="/signup">Sign Up</Link>
                 </Button>
               </div>
@@ -169,10 +170,10 @@ const Header = () => {
                     </nav>
                     {!user && (
                       <div className="mt-auto flex flex-col gap-2">
-                         <Button variant="outline" asChild>
+                         <Button variant="outline" asChild disabled={!isFirebaseConfigured}>
                             <Link href="/login" onClick={() => setMobileMenuOpen(false)}>Login</Link>
                          </Button>
-                         <Button asChild>
+                         <Button asChild disabled={!isFirebaseConfigured}>
                             <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>Sign Up</Link>
                          </Button>
                       </div>

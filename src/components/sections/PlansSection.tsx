@@ -64,8 +64,9 @@ const plans = [
   },
 ];
 
-const UPI_ID = "khanparul79@ybl";
-const UPI_NAME = "NextGenAI";
+const UPI_ID = process.env.NEXT_PUBLIC_UPI_ID || "khanparul79@ybl";
+const UPI_NAME = process.env.NEXT_PUBLIC_UPI_NAME || "NextGenAI";
+
 
 const GPayIcon = () => (
   <svg

@@ -1,5 +1,5 @@
 import { doc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
-import { db } from "./firebase";
+import { db, isFirebaseConfigured } from "./firebase";
 
 export interface Subscription {
     userId: string;
@@ -11,6 +11,10 @@ export interface Subscription {
 }
 
 export async function getUserSubscription(userId: string): Promise<Subscription | null> {
+    if (!isFirebaseConfigured || !db) {
+        console.warn("Firebase not configured, skipping subscription check.");
+        return null;
+    }
     try {
         const docRef = doc(db, "subscriptions", userId);
         const docSnap = await getDoc(docRef);
@@ -28,6 +32,10 @@ export async function getUserSubscription(userId: string): Promise<Subscription 
 }
 
 export async function getPendingVerifications() {
+    if (!isFirebaseConfigured || !db) {
+        console.warn("Firebase not configured, skipping pending verifications check.");
+        return [];
+    }
     try {
         const q = query(collection(db, "subscriptions"), where("paymentStatus", "==", "pending"));
         const querySnapshot = await getDocs(q);

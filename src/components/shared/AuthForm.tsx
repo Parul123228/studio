@@ -12,7 +12,7 @@ import {
   sendPasswordResetEmail,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { auth, db } from "@/lib/firebase";
+import { auth, db, isFirebaseConfigured } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -62,6 +62,17 @@ export default function AuthForm({ type }: AuthFormProps) {
 
   const onSubmit = async (values: z.infer<typeof form.control.getValues>) => {
     setIsLoading(true);
+
+    if (!isFirebaseConfigured || !auth || !db) {
+      toast({
+        title: "Configuration Error",
+        description: "Firebase is not configured. Please contact the site administrator.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
     try {
       if (type === "login") {
         await signInWithEmailAndPassword(auth, values.email, values.password);

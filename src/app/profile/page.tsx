@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { Loader } from "lucide-react";
 import { doc, setDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { db, isFirebaseConfigured } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 
 export default function ProfilePage() {
@@ -28,6 +28,10 @@ export default function ProfilePage() {
   }
 
   const handleSubmitTransaction = async () => {
+    if (!isFirebaseConfigured || !db || !user) {
+        toast({ title: "Error", description: "Feature not available. Firebase is not configured.", variant: "destructive" });
+        return;
+    }
     if (!transactionId) {
         toast({ title: "Error", description: "Please enter a transaction ID.", variant: "destructive" });
         return;
@@ -88,9 +92,10 @@ export default function ProfilePage() {
                             placeholder="Enter your UPI transaction ID" 
                             value={transactionId}
                             onChange={(e) => setTransactionId(e.target.value)}
+                            disabled={!isFirebaseConfigured}
                         />
                     </div>
-                    <Button onClick={handleSubmitTransaction} disabled={isSubmitting}>
+                    <Button onClick={handleSubmitTransaction} disabled={isSubmitting || !isFirebaseConfigured}>
                         {isSubmitting && <Loader className="mr-2 h-4 w-4 animate-spin"/>}
                         Submit for Verification
                     </Button>
