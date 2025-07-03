@@ -35,7 +35,7 @@ const prompt = ai.definePrompt({
   A user has the following need: {{{userNeeds}}}
 
   Suggest a trending AI tool that can help the user with this need. Provide a short description of the tool and its category.
-  Format the output as a JSON object with "toolName", "description", and "category" fields.
+  Your response must be a single, valid JSON object with the following fields: "toolName", "description", and "category". Do not include any other text, explanation, or markdown formatting.
   `,
 });
 
@@ -47,6 +47,9 @@ const suggestToolFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    return output!;
+    if (!output) {
+      throw new Error('Failed to get a valid suggestion from the AI model.');
+    }
+    return output;
   }
 );

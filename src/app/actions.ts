@@ -6,9 +6,20 @@ import { suggestTool, SuggestToolOutput } from '@/ai/flows/suggest-tool';
 export async function suggestToolsAction(): Promise<SuggestToolOutput[]> {
   try {
     const topics = ['photo realistic images', 'logos and icons', 'sci-fi concept art'];
-    const suggestions = await Promise.all(
+    const results = await Promise.allSettled(
       topics.map(topic => suggestTool({ userNeeds: `A tool for ${topic}` }))
     );
+
+    const suggestions = results
+      .filter((result): result is PromiseFulfilledResult<SuggestToolOutput> => {
+        if (result.status === 'rejected') {
+          console.error("A tool suggestion failed:", result.reason);
+          return false;
+        }
+        return true;
+      })
+      .map(result => result.value);
+
     return suggestions;
   } catch (error) {
     console.error("Error suggesting tools:", error);
@@ -25,6 +36,7 @@ export async function generateImageAction(input: GenerateImageInput): Promise<{ 
         return { output, error: null };
     } catch (error) {
         console.error("Error generating image:", error);
-        return { output: null, error: 'An unexpected error occurred during image generation.' };
+        const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred during image generation.';
+        return { output: null, error: errorMessage };
     }
 }
