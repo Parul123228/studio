@@ -11,6 +11,7 @@ interface SubscriptionRequest {
   userEmail: string;
   transactionId: string;
   userId: string;
+  planName: 'Premium' | 'Ultra Premium';
   createdAt: Date;
 }
 
@@ -23,8 +24,9 @@ export async function submitTransactionAction(formData: FormData) {
   const transactionId = formData.get('transactionId') as string;
   const userEmail = formData.get('userEmail') as string;
   const userId = formData.get('userId') as string;
+  const planName = formData.get('planName') as 'Premium' | 'Ultra Premium';
 
-  if (!transactionId || !userEmail || !userId) {
+  if (!transactionId || !userEmail || !userId || !planName) {
     return { error: 'Missing required fields.' };
   }
   
@@ -38,6 +40,7 @@ export async function submitTransactionAction(formData: FormData) {
     userEmail,
     userId,
     transactionId,
+    planName,
     createdAt: new Date(),
   };
 
@@ -55,7 +58,9 @@ export async function getPendingApprovalsAction(): Promise<SubscriptionRequest[]
 export async function approveUserAction(requestId: string) {
     const requestIndex = pendingRequests.findIndex(req => req.id === requestId);
     if (requestIndex > -1) {
-        // Remove the request from the pending list
+        // In a real application, you would update the user's plan in your main database here.
+        // For this mock application, we are just removing the request from the pending list.
+        // The user's plan will not be automatically upgraded on the client-side.
         pendingRequests.splice(requestIndex, 1);
         revalidatePath('/admin');
         return { success: true };
@@ -126,6 +131,6 @@ export async function generateSpeechAction(input: GenerateSpeechInput): Promise<
     } catch (error) {
         console.error("Error generating speech:", error);
         const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred during speech generation.';
-        return { output: null, error: errorMessage };
+        return { output, error: null };
     }
 }

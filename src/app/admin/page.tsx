@@ -8,12 +8,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { approveUserAction, getPendingApprovalsAction } from '@/app/actions';
 import { useAuth } from '@/contexts/auth-context';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 
 interface SubscriptionRequest {
   id: string;
   userEmail: string;
   transactionId: string;
   userId: string;
+  planName: 'Premium' | 'Ultra Premium';
   createdAt: Date;
 }
 
@@ -33,11 +35,11 @@ const AdminDashboard = () => {
         fetchRequests();
     }, []);
 
-    const handleApprove = async (requestId: string, userId: string) => {
+    const handleApprove = async (requestId: string) => {
         const result = await approveUserAction(requestId);
         if (result.success) {
             setRequests(prev => prev.filter(req => req.id !== requestId));
-            toast({ title: 'Success', description: `Request for user ${userId} approved.`});
+            toast({ title: 'Success', description: `Request approved. The user's plan must be updated manually if not using a real database.`});
         } else {
             toast({ title: 'Error', description: result.error, variant: 'destructive'});
         }
@@ -59,6 +61,7 @@ const AdminDashboard = () => {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>User Email</TableHead>
+                                <TableHead>Plan</TableHead>
                                 <TableHead>Transaction ID</TableHead>
                                 <TableHead>Date Submitted</TableHead>
                                 <TableHead className="text-right">Action</TableHead>
@@ -68,10 +71,11 @@ const AdminDashboard = () => {
                             {requests.map((req) => (
                                 <TableRow key={req.id}>
                                     <TableCell>{req.userEmail}</TableCell>
+                                    <TableCell><Badge variant={req.planName === 'Premium' ? 'default' : 'secondary'}>{req.planName}</Badge></TableCell>
                                     <TableCell>{req.transactionId}</TableCell>
                                     <TableCell>{req.createdAt.toLocaleString()}</TableCell>
                                     <TableCell className="text-right">
-                                        <Button onClick={() => handleApprove(req.id, req.userId)}>Approve</Button>
+                                        <Button onClick={() => handleApprove(req.id)}>Approve</Button>
                                     </TableCell>
                                 </TableRow>
                             ))}

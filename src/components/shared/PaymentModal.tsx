@@ -18,12 +18,14 @@ import { useToast } from "@/hooks/use-toast";
 interface PaymentModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  planName: string;
+  planPrice: string;
 }
 
 const UPI_ID = process.env.NEXT_PUBLIC_UPI_ID || "your-upi-id@ybl";
-const PLAN_PRICE = "199";
+const UPI_NAME = process.env.NEXT_PUBLIC_UPI_NAME || "NextGenAI";
 
-export default function PaymentModal({ open, onOpenChange }: PaymentModalProps) {
+export default function PaymentModal({ open, onOpenChange, planName, planPrice }: PaymentModalProps) {
   const router = useRouter();
   const [hasCopied, setHasCopied] = useState(false);
   const { toast } = useToast();
@@ -39,21 +41,23 @@ export default function PaymentModal({ open, onOpenChange }: PaymentModalProps) 
     onOpenChange(false);
     router.push('/profile');
   };
+  
+  if (!planName || !planPrice) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Upgrade to Premium</DialogTitle>
+          <DialogTitle>Upgrade to {planName}</DialogTitle>
           <DialogDescription>
-            Pay ₹{PLAN_PRICE} using any UPI app to get started.
+            Pay ₹{planPrice} using any UPI app to get started.
           </DialogDescription>
         </DialogHeader>
         
         <div className="py-4 text-center">
             <div className="inline-block p-4 bg-white rounded-lg border">
                  <Image 
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${UPI_ID}%26pn=NextGenAI%26am=${PLAN_PRICE}%26cu=INR`}
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${UPI_ID}%26pn=${UPI_NAME}%26am=${planPrice}%26cu=INR`}
                     width={150}
                     height={150}
                     alt="UPI QR Code"

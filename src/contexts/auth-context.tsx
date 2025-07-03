@@ -15,7 +15,7 @@ interface AppUser {
   email: string | null;
   displayName: string | null;
   photoURL: string | null;
-  plan: 'Free' | 'Premium';
+  plan: 'Free' | 'Premium' | 'Ultra Premium';
 }
 
 interface AuthContextType {
@@ -23,7 +23,7 @@ interface AuthContextType {
   loading: boolean;
   login: () => void;
   logout: () => void;
-  upgradePlan: () => void;
+  upgradePlan: (plan: 'Premium' | 'Ultra Premium') => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -62,10 +62,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
-  const upgradePlan = useCallback(() => {
+  const upgradePlan = useCallback((plan: 'Premium' | 'Ultra Premium') => {
     setUser(currentUser => {
         if (currentUser) {
-            const upgradedUser = { ...currentUser, plan: 'Premium' as const };
+            const upgradedUser = { ...currentUser, plan: plan };
             localStorage.setItem('nextgenai-user', JSON.stringify(upgradedUser));
             return upgradedUser;
         }

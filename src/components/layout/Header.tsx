@@ -19,19 +19,21 @@ import { useAuth } from "@/contexts/auth-context";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useRouter } from "next/navigation";
 import { Badge } from "../ui/badge";
+import MembershipModal from "../shared/MembershipModal";
 
 const navLinks = [
-  { href: "/generate", label: "Art Generator", icon: ImageIcon },
-  { href: "/chatbot", label: "AI Chatbot", icon: Bot },
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/discover", label: "Discover", icon: Rocket },
-  { href: "/plans", label: "Plans", icon: User },
+  { href: "/generate", label: "Art Generator", icon: ImageIcon, premium: false },
+  { href: "/chatbot", label: "AI Chatbot", icon: Bot, premium: true },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, premium: true },
+  { href: "/discover", label: "Discover", icon: Rocket, premium: true },
+  { href: "/plans", label: "Plans", icon: User, premium: false },
 ];
 
 const Header = () => {
   const [scrolled, setScrolled] = React.useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-  
+  const [isMembershipModalOpen, setMembershipModalOpen] = React.useState(false);
+
   const { user, logout } = useAuth();
   const router = useRouter();
 
@@ -48,30 +50,45 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleLinkClick = () => {
-    if(mobileMenuOpen) {
-      setMobileMenuOpen(false);
+  const handleLinkClick = (e: React.MouseEvent, link: typeof navLinks[0]) => {
+    const isLocked = link.premium && (!user || user.plan === 'Free');
+    if (isLocked) {
+      e.preventDefault();
+      setMembershipModalOpen(true);
+      if (mobileMenuOpen) setMobileMenuOpen(false);
+    } else {
+      if (mobileMenuOpen) setMobileMenuOpen(false);
+    }
+  };
+  
+  const getPlanVariant = () => {
+    if (!user) return 'secondary';
+    switch (user.plan) {
+        case 'Premium': return 'default';
+        case 'Ultra Premium': return 'secondary';
+        default: return 'outline';
     }
   };
 
-  const NavItems = () => (
+  const NavItems = ({ isMobile = false }) => (
     <>
       {navLinks.map((link) => (
-        <Link 
-          key={link.href} 
-          href={link.href}
-          onClick={handleLinkClick}
-          className="flex items-center p-2 rounded-md hover:bg-secondary"
-        >
-          <link.icon className="mr-2 h-4 w-4" />
-          {link.label}
-        </Link>
+        <Button key={link.href} asChild variant={isMobile ? 'ghost' : 'ghost'} className={isMobile ? 'justify-start' : ''}>
+          <Link
+            href={link.href}
+            onClick={(e) => handleLinkClick(e, link)}
+          >
+            <link.icon className="mr-2 h-4 w-4" />
+            {link.label}
+          </Link>
+        </Button>
       ))}
     </>
   );
 
   return (
     <>
+      <MembershipModal open={isMembershipModalOpen} onOpenChange={setMembershipModalOpen} />
       <header
         className={`sticky top-0 z-50 transition-all duration-300 ${
           scrolled
@@ -82,17 +99,7 @@ const Header = () => {
         <div className="container mx-auto flex h-20 items-center justify-between px-4">
           <Logo />
           <nav className="hidden items-center gap-1 lg:flex">
-             {navLinks.map((link) => (
-              <Button key={link.href} asChild variant="ghost">
-                <Link
-                  href={link.href}
-                  onClick={handleLinkClick}
-                >
-                  <link.icon className="mr-2 h-4 w-4" />
-                  {link.label}
-                </Link>
-              </Button>
-            ))}
+             <NavItems />
           </nav>
           <div className="flex items-center gap-2">
             <ThemeToggle />
@@ -121,7 +128,7 @@ const Header = () => {
                   <DropdownMenuItem onClick={() => router.push('/profile')}>
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
-                    <Badge variant={user.plan === 'Premium' ? 'default' : 'secondary'} className="ml-auto">{user.plan}</Badge>
+                    <Badge variant={getPlanVariant()} className="ml-auto">{user.plan}</Badge>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
@@ -156,7 +163,7 @@ const Header = () => {
                        <Logo />
                      </div>
                     <nav className="flex flex-col gap-2">
-                      <NavItems />
+                      <NavItems isMobile={true} />
                     </nav>
                     {!user && (
                       <div className="mt-auto flex flex-col gap-2">

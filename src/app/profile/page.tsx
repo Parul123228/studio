@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { submitTransactionAction } from "@/app/actions";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const UpgradeForm = () => {
     const { user } = useAuth();
@@ -18,6 +19,11 @@ const UpgradeForm = () => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
         
+        if (!formData.get('planName')) {
+            toast({ title: 'Submission Failed', description: 'Please select a plan.', variant: 'destructive' });
+            return;
+        }
+
         const result = await submitTransactionAction(formData);
 
         if (result.error) {
@@ -31,17 +37,30 @@ const UpgradeForm = () => {
     return (
         <Card className="mt-8 border-primary">
             <CardHeader>
-                <CardTitle>Upgrade to Premium</CardTitle>
+                <CardTitle>Upgrade to a New Plan</CardTitle>
                 <CardDescription>
-                    After completing the payment, submit your UPI Transaction ID below to upgrade your plan.
+                    After completing a payment from the Plans page, select the plan you paid for and submit your UPI Transaction ID below.
                 </CardDescription>
             </CardHeader>
             <form onSubmit={handleSubmit}>
-                <CardContent>
+                <CardContent className="space-y-6">
                     <input type="hidden" name="userId" value={user?.uid || ''} />
                     <input type="hidden" name="userEmail" value={user?.email || ''} />
                     <div className="space-y-2">
-                        <Label htmlFor="transactionId">UPI Transaction ID</Label>
+                        <Label>1. Select Plan</Label>
+                        <RadioGroup name="planName" required className="flex gap-4 pt-2">
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="Premium" id="r-premium" />
+                                <Label htmlFor="r-premium">Premium (₹499)</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="Ultra Premium" id="r-ultra" />
+                                <Label htmlFor="r-ultra">Ultra Premium (₹999)</Label>
+                            </div>
+                        </RadioGroup>
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="transactionId">2. UPI Transaction ID</Label>
                         <Input id="transactionId" name="transactionId" placeholder="Enter your transaction ID" required />
                     </div>
                 </CardContent>
@@ -72,6 +91,17 @@ export default function ProfilePage() {
     }
     return null;
   }
+  
+  const getPlanVariant = () => {
+    switch (user.plan) {
+      case 'Premium':
+        return 'default';
+      case 'Ultra Premium':
+        return 'secondary';
+      default:
+        return 'outline';
+    }
+  }
 
   return (
     <div className="container mx-auto px-4 py-16 sm:py-24 max-w-2xl">
@@ -82,7 +112,7 @@ export default function ProfilePage() {
                 <CardTitle className="text-3xl">My Profile</CardTitle>
                 <CardDescription>View your account details and manage your subscription.</CardDescription>
             </div>
-            <Badge variant={user.plan === 'Premium' ? 'default' : 'secondary'}>{user.plan}</Badge>
+            <Badge variant={getPlanVariant()}>{user.plan}</Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -100,7 +130,7 @@ export default function ProfilePage() {
         </CardFooter>
       </Card>
 
-      {user.plan === 'Free' && <UpgradeForm />}
+      {user.plan !== 'Ultra Premium' && <UpgradeForm />}
     </div>
   );
 }
