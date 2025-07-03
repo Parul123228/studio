@@ -3,7 +3,68 @@
 import { generateImage, GenerateImageInput, GenerateImageOutput } from '@/ai/flows/generate-image';
 import { generateSpeech, GenerateSpeechInput, GenerateSpeechOutput } from '@/ai/flows/generate-speech';
 import { suggestTool, SuggestToolOutput } from '@/ai/flows/suggest-tool';
+import { revalidatePath } from 'next/cache';
 
+// --- Mock Database for Subscription Requests ---
+interface SubscriptionRequest {
+  id: string;
+  userEmail: string;
+  transactionId: string;
+  userId: string;
+  createdAt: Date;
+}
+
+// In-memory store. In a real app, use a database like Firestore.
+let pendingRequests: SubscriptionRequest[] = [];
+let nextId = 1;
+// --- End Mock Database ---
+
+export async function submitTransactionAction(formData: FormData) {
+  const transactionId = formData.get('transactionId') as string;
+  const userEmail = formData.get('userEmail') as string;
+  const userId = formData.get('userId') as string;
+
+  if (!transactionId || !userEmail || !userId) {
+    return { error: 'Missing required fields.' };
+  }
+  
+  // Prevent duplicate submissions
+  if (pendingRequests.some(req => req.userId === userId)) {
+    return { error: 'You already have a pending submission.' };
+  }
+
+  const newRequest: SubscriptionRequest = {
+    id: (nextId++).toString(),
+    userEmail,
+    userId,
+    transactionId,
+    createdAt: new Date(),
+  };
+
+  pendingRequests.push(newRequest);
+  
+  revalidatePath('/admin'); // To refresh the data on the admin page
+  return { success: 'Your request has been submitted successfully!' };
+}
+
+export async function getPendingApprovalsAction(): Promise<SubscriptionRequest[]> {
+  // Return a copy to avoid direct mutation
+  return [...pendingRequests];
+}
+
+export async function approveUserAction(requestId: string) {
+    const requestIndex = pendingRequests.findIndex(req => req.id === requestId);
+    if (requestIndex > -1) {
+        // Remove the request from the pending list
+        pendingRequests.splice(requestIndex, 1);
+        revalidatePath('/admin');
+        return { success: true };
+    }
+    return { success: false, error: 'Request not found.' };
+}
+
+
+// Existing actions...
 export async function suggestToolsAction(): Promise<SuggestToolOutput[]> {
   try {
     const topics = [

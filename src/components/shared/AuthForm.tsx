@@ -1,36 +1,74 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { Construction } from "lucide-react";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { useAuth } from "@/contexts/auth-context";
+import { useRouter } from "next/navigation";
 
 type AuthFormProps = {
-  type: "login" | "signup" | "forgot-password";
+  type: "login" | "signup";
 };
 
 export default function AuthForm({ type }: AuthFormProps) {
+  const { login } = useAuth();
+  const router = useRouter();
+
   const titles = {
-    login: { title: "Login" },
-    signup: { title: "Create an Account" },
-    "forgot-password": { title: "Forgot Password" },
+    login: { 
+        title: "Welcome Back!",
+        description: "Log in to access your dashboard and projects.",
+        buttonText: "Login",
+        footerText: "Don't have an account?",
+        footerLink: "/signup",
+        footerLinkText: "Sign Up"
+    },
+    signup: { 
+        title: "Create an Account",
+        description: "Join NextGenAI to start creating with the future of AI.",
+        buttonText: "Sign Up",
+        footerText: "Already have an account?",
+        footerLink: "/login",
+        footerLinkText: "Login"
+    },
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // In a real app, you'd handle form data. Here, we just log in the mock user.
+    login();
+    router.push('/dashboard');
   };
 
   return (
-    <Card className="w-full max-w-md text-center">
-      <CardHeader>
+    <Card className="w-full max-w-md">
+      <CardHeader className="text-center">
         <CardTitle className="text-3xl">{titles[type].title}</CardTitle>
-        <CardDescription>This feature is currently under development.</CardDescription>
+        <CardDescription>{titles[type].description}</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4 flex flex-col items-center">
-        <Construction className="h-16 w-16 text-primary/50" />
-        <p className="text-muted-foreground">
-            We're working hard to bring this feature to you. Please check back later!
-        </p>
-        <Button asChild>
-            <Link href="/">Go back to Home</Link>
-        </Button>
-      </CardContent>
+      <form onSubmit={handleSubmit}>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" type="email" placeholder="parul@example.com" required defaultValue="parul@example.com" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <Input id="password" type="password" required defaultValue="password123" />
+          </div>
+        </CardContent>
+        <CardFooter className="flex flex-col gap-4">
+          <Button type="submit" className="w-full">{titles[type].buttonText}</Button>
+          <p className="text-sm text-muted-foreground">
+            {titles[type].footerText}{" "}
+            <Link href={titles[type].footerLink} className="text-primary hover:underline">
+              {titles[type].footerLinkText}
+            </Link>
+          </p>
+        </CardFooter>
+      </form>
     </Card>
   );
 }

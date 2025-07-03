@@ -18,6 +18,7 @@ import ThemeToggle from "@/components/shared/ThemeToggle";
 import { useAuth } from "@/contexts/auth-context";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useRouter } from "next/navigation";
+import { Badge } from "../ui/badge";
 
 const navLinks = [
   { href: "/generate", label: "Art Generator", icon: ImageIcon },
@@ -31,11 +32,11 @@ const Header = () => {
   const [scrolled, setScrolled] = React.useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const router = useRouter();
 
-  const handleLogout = async () => {
-    // Auth is disabled, so just redirect to home
+  const handleLogout = () => {
+    logout();
     router.push('/');
   };
   
@@ -120,6 +121,7 @@ const Header = () => {
                   <DropdownMenuItem onClick={() => router.push('/profile')}>
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
+                    <Badge variant={user.plan === 'Premium' ? 'default' : 'secondary'} className="ml-auto">{user.plan}</Badge>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
