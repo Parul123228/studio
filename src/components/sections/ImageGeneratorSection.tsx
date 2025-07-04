@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -56,42 +56,6 @@ const ImageGeneratorSection = () => {
     },
   });
 
-  // This cleans up the generated Object URLs to prevent memory leaks.
-  useEffect(() => {
-    return () => {
-      generatedImages.forEach(image => {
-        // Only revoke if it's a blob URL
-        if (image.url.startsWith('blob:')) {
-            URL.revokeObjectURL(image.url)
-        }
-      });
-    };
-  }, [generatedImages]);
-
-  // Converts a base64 data URI to a Blob object
-  const dataURIToBlob = (dataURI: string) => {
-    if (typeof atob === 'undefined') {
-        return null;
-    }
-    try {
-        const splitDataURI = dataURI.split(',');
-        if (splitDataURI.length < 2) return null;
-
-        const byteString = atob(splitDataURI[1]);
-        const mimeString = splitDataURI[0].split(':')[1].split(';')[0];
-
-        const ia = new Uint8Array(byteString.length);
-        for (let i = 0; i < byteString.length; i++) {
-            ia[i] = byteString.charCodeAt(i);
-        }
-
-        return new Blob([ia], { type: mimeString });
-    } catch(e) {
-        console.error("Error converting data URI to Blob:", e);
-        return null;
-    }
-  }
-
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setIsLoading(true);
     
@@ -107,36 +71,12 @@ const ImageGeneratorSection = () => {
         variant: "destructive",
       });
     } else {
-      try {
-        const mediaUrl = result.output.media;
-        let finalImageUrl = mediaUrl;
-
-        // If it's a data URI, convert it to a blob URL for performance and reliability
-        if (mediaUrl.startsWith('data:image')) {
-            const blob = dataURIToBlob(mediaUrl);
-            if (blob) {
-                finalImageUrl = URL.createObjectURL(blob);
-            } else {
-                // This error is critical, it means the data from the AI is corrupt
-                throw new Error("Failed to process image data from AI. The data might be corrupt.");
-            }
-        } 
-        // If it's not a data URI (e.g., https://placehold.co/...), we use it directly.
-
-        setGeneratedImages(prev => [{ id: Date.now(), prompt: data.prompt, url: finalImageUrl }, ...prev]);
-        toast({
-            title: "Image Generated Successfully!",
-            description: "Your creation has come to life.",
-        });
-        
-      } catch (e) {
-        console.error("Failed to process image data:", e);
-        toast({
-          title: "Error Displaying Image",
-          description: e instanceof Error ? e.message : "Could not display the generated image.",
-          variant: "destructive",
-        });
-      }
+      const imageUrl = result.output.media;
+      setGeneratedImages(prev => [{ id: Date.now(), prompt: data.prompt, url: imageUrl }, ...prev]);
+      toast({
+          title: "Image Generated Successfully!",
+          description: "Your creation has come to life.",
+      });
     }
     
     setIsLoading(false);
