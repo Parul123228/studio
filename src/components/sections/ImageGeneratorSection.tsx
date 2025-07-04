@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -60,28 +60,38 @@ const ImageGeneratorSection = () => {
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setIsLoading(true);
-    
-    const result = await generateImageAction({
-        prompt: data.prompt,
-        style: data.style
-    });
+    setGeneratedImages([]); // Clear previous images when starting a new generation
 
-    if (result.error || !result.output || !result.output.media) {
-      toast({
-        title: "Error Generating Image",
-        description: result.error || "The AI returned an empty image. Please try again.",
-        variant: "destructive",
-      });
-    } else {
-      const imageUrl = result.output.media;
-      setGeneratedImages(prev => [{ id: Date.now(), prompt: data.prompt, url: imageUrl }, ...prev]);
-      toast({
-          title: "Image Generated Successfully!",
-          description: "Your creation has come to life.",
-      });
+    try {
+        const result = await generateImageAction({
+            prompt: data.prompt,
+            style: data.style,
+        });
+
+        if (result.error || !result.output || !result.output.media) {
+            toast({
+                title: "Error Generating Image",
+                description: result.error || "The AI returned an empty or invalid image. Please try a different prompt.",
+                variant: "destructive",
+            });
+        } else {
+            const imageUrl = result.output.media;
+            setGeneratedImages([{ id: Date.now(), prompt: data.prompt, url: imageUrl }]);
+            toast({
+                title: "Image Generated Successfully!",
+                description: "Your creation has come to life.",
+            });
+        }
+    } catch (e) {
+        console.error("An unexpected error occurred:", e);
+        toast({
+            title: "An Unexpected Error Occurred",
+            description: "Something went wrong on our end. Please try again later.",
+            variant: "destructive",
+        });
+    } finally {
+        setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
   
   const handleSave = () => {
@@ -97,7 +107,7 @@ const ImageGeneratorSection = () => {
         <Button 
           variant="ghost" 
           onClick={() => router.back()}
-          className="absolute left-0 top-1/2 -translate-y-1/2"
+          className="absolute left-0 top-0"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
