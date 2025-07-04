@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -56,6 +56,33 @@ const ImageGeneratorSection = () => {
     },
   });
 
+  // This cleans up the generated Object URLs to prevent memory leaks.
+  useEffect(() => {
+    return () => {
+      generatedImages.forEach(image => URL.revokeObjectURL(image.url));
+    };
+  }, [generatedImages]);
+
+  // Converts a base64 data URI to a Blob object
+  const dataURIToBlob = (dataURI: string) => {
+    if (typeof atob === 'undefined') {
+        // Handle server-side or environments without atob
+        return null;
+    }
+    const splitDataURI = dataURI.split(',');
+    if (splitDataURI.length < 2) return null;
+
+    const byteString = atob(splitDataURI[1]);
+    const mimeString = splitDataURI[0].split(':')[1].split(';')[0];
+
+    const ia = new Uint8Array(byteString.length);
+    for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+
+    return new Blob([ia], { type: mimeString });
+  }
+
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setIsLoading(true);
     
@@ -71,11 +98,26 @@ const ImageGeneratorSection = () => {
         variant: "destructive",
       });
     } else {
-      setGeneratedImages(prev => [{ id: Date.now(), prompt: data.prompt, url: result.output!.media }, ...prev]);
-      toast({
-        title: "Image Generated Successfully!",
-        description: "Your creation has come to life.",
-      });
+      try {
+        const blob = dataURIToBlob(result.output.media);
+        if (blob) {
+            const objectURL = URL.createObjectURL(blob);
+            setGeneratedImages(prev => [{ id: Date.now(), prompt: data.prompt, url: objectURL }, ...prev]);
+            toast({
+                title: "Image Generated Successfully!",
+                description: "Your creation has come to life.",
+            });
+        } else {
+             throw new Error("Failed to convert data URI to Blob.");
+        }
+      } catch (e) {
+        console.error("Failed to process image data:", e);
+        toast({
+          title: "Error Displaying Image",
+          description: "Could not display the generated image. The data might be corrupt.",
+          variant: "destructive",
+        });
+      }
     }
     
     setIsLoading(false);
