@@ -7,7 +7,7 @@ const MOCK_USER = {
   uid: 'mock-user-123',
   email: 'parul@example.com',
   displayName: 'Parul',
-  photoURL: 'https://placehold.co/100x100.png'
+  photoURL: null
 };
 
 interface AppUser {
