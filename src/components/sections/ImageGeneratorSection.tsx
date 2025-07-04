@@ -36,7 +36,6 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { generateImageAction } from "@/app/actions";
 import { Loader, Wand2, Download, Save, ZoomIn } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
 
 const formSchema = z.object({
   prompt: z.string().min(10, "Prompt must be at least 10 characters long."),
@@ -211,75 +210,68 @@ const ImageGeneratorSection = () => {
         </div>
 
         <div className="lg:col-span-2">
-            <AnimatePresence>
-                <div className="grid grid-cols-2 gap-4">
-                    {isLoading && (
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="col-span-2"
-                        >
-                            <Card className="w-full aspect-square p-4 flex items-center justify-center border-dashed">
-                                <div className="text-center">
-                                    <Loader className="mx-auto h-16 w-16 text-muted-foreground mb-4 animate-spin"/>
-                                    <h3 className="text-xl mb-2">Generating masterpiece...</h3>
-                                </div>
-                            </Card>
-                        </motion.div>
-                    )}
-                    {generatedImages.map((image, index) => (
-                    <motion.div 
-                        key={image.id} 
-                        className="group relative overflow-hidden rounded-lg aspect-square border"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: index * 0.05 }}
+            <div className="grid grid-cols-2 gap-4">
+                {isLoading && (
+                    <div
+                        className="col-span-2"
                     >
-                         <Image
-                            src={image.url}
-                            alt={image.prompt}
-                            width={512}
-                            height={512}
-                            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                            data-ai-hint={(initialImages.find(i => i.id === image.id)?.hint) || "ai art"}
-                        />
-                        <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-2">
-                            <div className="flex justify-end gap-1">
-                                <Dialog>
-                                    <DialogTrigger asChild>
-                                        <Button size="icon" variant="ghost" className="text-white h-8 w-8 hover:bg-white/20 hover:text-white">
-                                            <ZoomIn className="h-4 w-4" />
-                                        </Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="max-w-3xl p-0 bg-transparent border-0">
-                                        <DialogHeader className="sr-only">
-                                          <DialogTitle>Zoomed Image</DialogTitle>
-                                          <DialogDescription>{image.prompt}</DialogDescription>
-                                        </DialogHeader>
-                                        <Image
-                                            src={image.url}
-                                            alt={image.prompt}
-                                            width={1024}
-                                            height={1024}
-                                            className="w-full h-auto rounded-lg"
-                                        />
-                                    </DialogContent>
-                                </Dialog>
-                                <Button asChild size="icon" variant="ghost" className="text-white h-8 w-8 hover:bg-white/20 hover:text-white">
-                                    <a href={image.url} download={`${image.prompt.slice(0, 30).replace(/\s/g, '_') || 'ai-generated-image'}.png`}>
-                                        <Download className="h-4 w-4" />
-                                    </a>
-                                </Button>
-                                <Button onClick={handleSave} size="icon" variant="ghost" className="text-white h-8 w-8 hover:bg-white/20 hover:text-white">
-                                    <Save className="h-4 w-4" />
-                                </Button>
+                        <Card className="w-full aspect-square p-4 flex items-center justify-center border-dashed">
+                            <div className="text-center">
+                                <Loader className="mx-auto h-16 w-16 text-muted-foreground mb-4 animate-spin"/>
+                                <h3 className="text-xl mb-2">Generating masterpiece...</h3>
                             </div>
-                            <p className="text-white text-sm line-clamp-2">{image.prompt}</p>
+                        </Card>
+                    </div>
+                )}
+                {generatedImages.map((image) => (
+                <div 
+                    key={image.id} 
+                    className="group relative overflow-hidden rounded-lg aspect-square border"
+                >
+                     <Image
+                        src={image.url}
+                        alt={image.prompt}
+                        width={512}
+                        height={512}
+                        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                        data-ai-hint={(initialImages.find(i => i.id === image.id)?.hint) || "ai art"}
+                    />
+                    <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-2">
+                        <div className="flex justify-end gap-1">
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button size="icon" variant="ghost" className="text-white h-8 w-8 hover:bg-white/20 hover:text-white">
+                                        <ZoomIn className="h-4 w-4" />
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-3xl p-0 bg-transparent border-0">
+                                    <DialogHeader className="sr-only">
+                                      <DialogTitle>Zoomed Image</DialogTitle>
+                                      <DialogDescription>{image.prompt}</DialogDescription>
+                                    </DialogHeader>
+                                    <Image
+                                        src={image.url}
+                                        alt={image.prompt}
+                                        width={1024}
+                                        height={1024}
+                                        className="w-full h-auto rounded-lg"
+                                    />
+                                </DialogContent>
+                            </Dialog>
+                            <Button asChild size="icon" variant="ghost" className="text-white h-8 w-8 hover:bg-white/20 hover:text-white">
+                                <a href={image.url} download={`${image.prompt.slice(0, 30).replace(/\s/g, '_') || 'ai-generated-image'}.png`}>
+                                    <Download className="h-4 w-4" />
+                                </a>
+                            </Button>
+                            <Button onClick={handleSave} size="icon" variant="ghost" className="text-white h-8 w-8 hover:bg-white/20 hover:text-white">
+                                <Save className="h-4 w-4" />
+                            </Button>
                         </div>
-                    </motion.div>
-                    ))}
+                        <p className="text-white text-sm line-clamp-2">{image.prompt}</p>
+                    </div>
                 </div>
-            </AnimatePresence>
+                ))}
+            </div>
         </div>
       </div>
     </section>
