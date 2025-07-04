@@ -22,8 +22,8 @@ interface PaymentModalProps {
   planPrice: string;
 }
 
-const UPI_ID = process.env.NEXT_PUBLIC_UPI_ID || "your-upi-id@ybl";
-const UPI_NAME = process.env.NEXT_PUBLIC_UPI_NAME || "NextGenAI";
+const UPI_ID = "khanparul79@ybl";
+const UPI_NAME = "NextGenAI";
 
 export default function PaymentModal({ open, onOpenChange, planName, planPrice }: PaymentModalProps) {
   const router = useRouter();
