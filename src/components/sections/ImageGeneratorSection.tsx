@@ -97,7 +97,7 @@ const ImageGeneratorSection = () => {
         <Button 
           variant="ghost" 
           onClick={() => router.back()}
-          className="absolute left-0 top-1/2 -translate-y-1/2 hidden md:inline-flex"
+          className="absolute left-0 top-1/2 -translate-y-1/2"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
