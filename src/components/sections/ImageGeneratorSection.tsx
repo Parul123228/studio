@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -73,10 +72,10 @@ const ImageGeneratorSection = () => {
         style: data.style
     });
 
-    if (result.error || !result.output) {
+    if (result.error || !result.output || !result.output.media) {
       toast({
         title: "Error Generating Image",
-        description: result.error || "An unknown error occurred.",
+        description: result.error || "The AI returned an empty image. Please try a different prompt.",
         variant: "destructive",
       });
     } else {
@@ -229,7 +228,7 @@ const ImageGeneratorSection = () => {
                      <img
                         src={image.url}
                         alt={image.prompt}
-                        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                        className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-2">
                         <div className="flex justify-end gap-1">
