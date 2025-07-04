@@ -5,7 +5,6 @@ import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -227,14 +226,10 @@ const ImageGeneratorSection = () => {
                     key={image.id} 
                     className="group relative overflow-hidden rounded-lg aspect-square border"
                 >
-                     <Image
+                     <img
                         src={image.url}
                         alt={image.prompt}
-                        width={512}
-                        height={512}
                         className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                        data-ai-hint="ai art"
-                        unoptimized
                     />
                     <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-2">
                         <div className="flex justify-end gap-1">
@@ -249,13 +244,10 @@ const ImageGeneratorSection = () => {
                                       <DialogTitle>Zoomed Image</DialogTitle>
                                       <DialogDescription>{image.prompt}</DialogDescription>
                                     </DialogHeader>
-                                    <Image
+                                    <img
                                         src={image.url}
                                         alt={image.prompt}
-                                        width={1024}
-                                        height={1024}
                                         className="w-full h-auto rounded-lg"
-                                        unoptimized
                                     />
                                 </DialogContent>
                             </Dialog>
