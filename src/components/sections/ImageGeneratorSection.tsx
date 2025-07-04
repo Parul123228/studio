@@ -60,7 +60,7 @@ const ImageGeneratorSection = () => {
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setIsLoading(true);
-    setGeneratedImages([]); // Clear previous images
+    setGeneratedImages([]);
 
     try {
         const result = await generateImageAction({
@@ -108,10 +108,9 @@ const ImageGeneratorSection = () => {
           variant="ghost"
           size="icon"
           onClick={() => router.back()}
-          className="absolute left-0 -top-4"
+          className="absolute left-0 -top-6"
         >
-          <ArrowLeft className="h-5 w-5" />
-          <span className="sr-only">Back</span>
+          <ArrowLeft className="h-6 w-6" />
         </Button>
         <div className="text-center">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">Create with AI</h2>
