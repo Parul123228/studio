@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -60,7 +60,7 @@ const ImageGeneratorSection = () => {
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setIsLoading(true);
-    setGeneratedImages([]); // Clear previous images when starting a new generation
+    setGeneratedImages([]); // Clear previous images
 
     try {
         const result = await generateImageAction({
@@ -75,8 +75,8 @@ const ImageGeneratorSection = () => {
                 variant: "destructive",
             });
         } else {
-            const imageUrl = result.output.media;
-            setGeneratedImages([{ id: Date.now(), prompt: data.prompt, url: imageUrl }]);
+            const newImage = { id: Date.now(), prompt: data.prompt, url: result.output.media };
+            setGeneratedImages([newImage]);
             toast({
                 title: "Image Generated Successfully!",
                 description: "Your creation has come to life.",
@@ -105,12 +105,13 @@ const ImageGeneratorSection = () => {
     <section className="w-full">
       <div className="relative mb-12">
         <Button 
-          variant="ghost" 
+          variant="ghost"
+          size="icon"
           onClick={() => router.back()}
-          className="absolute left-0 top-0"
+          className="absolute left-0 -top-4"
         >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back
+          <ArrowLeft className="h-5 w-5" />
+          <span className="sr-only">Back</span>
         </Button>
         <div className="text-center">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">Create with AI</h2>
@@ -236,26 +237,23 @@ const ImageGeneratorSection = () => {
                     </div>
                 )}
                 {generatedImages.map((image) => (
-                    <Card key={image.id} className="overflow-hidden">
-                        <div className="aspect-square bg-muted">
-                           <img
-                              src={image.url}
-                              alt={image.prompt}
-                              className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="p-4">
-                            <p className="text-sm text-muted-foreground line-clamp-2 h-10">{image.prompt}</p>
-                            <div className="flex justify-end gap-2 mt-2">
-                                <Button asChild size="icon" variant="ghost">
-                                    <a href={image.url} download={`${image.prompt.slice(0, 30).replace(/\s/g, '_') || 'ai-generated-image'}.png`}>
-                                        <Download className="h-4 w-4" />
-                                    </a>
-                                </Button>
-                                <Button onClick={handleSave} size="icon" variant="ghost">
-                                    <Save className="h-4 w-4" />
-                                </Button>
-                            </div>
+                    <Card key={image.id} className="overflow-hidden group relative">
+                        <img
+                            src={image.url}
+                            alt={image.prompt}
+                            className="w-full h-full object-cover aspect-square"
+                        />
+                         <div className="absolute bottom-0 left-0 right-0 p-4">
+                           <div className="flex justify-end gap-2">
+                               <Button asChild size="icon" variant="default">
+                                   <a href={image.url} download={`${image.prompt.slice(0, 30).replace(/\s/g, '_') || 'ai-generated-image'}.png`}>
+                                       <Download className="h-4 w-4" />
+                                   </a>
+                               </Button>
+                               <Button onClick={handleSave} size="icon" variant="default">
+                                   <Save className="h-4 w-4" />
+                               </Button>
+                           </div>
                         </div>
                     </Card>
                 ))}
