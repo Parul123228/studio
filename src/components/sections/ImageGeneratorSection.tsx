@@ -26,7 +26,8 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { generateImageAction } from "@/app/actions";
-import { Loader, Wand2, Download, Save, Image as ImageIcon } from "lucide-react";
+import { Loader, Wand2, Download, Save, Image as ImageIcon, ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   prompt: z.string().min(10, "Prompt must be at least 10 characters long."),
@@ -46,6 +47,7 @@ const ImageGeneratorSection = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
   const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -91,11 +93,21 @@ const ImageGeneratorSection = () => {
 
   return (
     <section className="w-full">
-      <div className="text-center mb-12">
-        <h2 className="text-4xl md:text-5xl font-bold mb-4">Create with AI</h2>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Bring your imagination to life. Describe anything you can think of.
-        </p>
+      <div className="relative mb-12">
+        <Button 
+          variant="ghost" 
+          onClick={() => router.back()}
+          className="absolute left-0 top-1/2 -translate-y-1/2 hidden md:inline-flex"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back
+        </Button>
+        <div className="text-center">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">Create with AI</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Bring your imagination to life. Describe anything you can think of.
+            </p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
