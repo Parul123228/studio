@@ -24,17 +24,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { generateImageAction } from "@/app/actions";
-import { Loader, Wand2, Download, Save, ZoomIn, Image as ImageIcon } from "lucide-react";
+import { Loader, Wand2, Download, Save, Image as ImageIcon } from "lucide-react";
 
 const formSchema = z.object({
   prompt: z.string().min(10, "Prompt must be at least 10 characters long."),
@@ -198,9 +190,9 @@ const ImageGeneratorSection = () => {
         </div>
 
         <div className="lg:col-span-2">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {isLoading && (
-                    <div className="col-span-2">
+                    <div className="col-span-full">
                         <Card className="w-full aspect-square p-4 flex items-center justify-center border-dashed">
                             <div className="text-center">
                                 <Loader className="mx-auto h-16 w-16 text-muted-foreground mb-4 animate-spin"/>
@@ -210,8 +202,8 @@ const ImageGeneratorSection = () => {
                     </div>
                 )}
                 {!isLoading && generatedImages.length === 0 && (
-                    <div className="col-span-2">
-                        <Card className="w-full aspect-square p-4 flex items-center justify-center border-dashed bg-muted/20">
+                    <div className="col-span-full">
+                        <Card className="w-full min-h-[400px] lg:aspect-square p-4 flex items-center justify-center border-dashed bg-muted/20">
                             <div className="text-center text-muted-foreground">
                                 <ImageIcon className="mx-auto h-16 w-16 mb-4" />
                                 <h3 className="text-xl font-semibold mb-2 text-foreground">Creations will appear here</h3>
@@ -220,48 +212,29 @@ const ImageGeneratorSection = () => {
                         </Card>
                     </div>
                 )}
-                {!isLoading && generatedImages.map((image) => (
-                <div 
-                    key={image.id} 
-                    className="group relative overflow-hidden rounded-lg aspect-square border"
-                >
-                     <img
-                        src={image.url}
-                        alt={image.prompt}
-                        className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-2">
-                        <div className="flex justify-end gap-1">
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <Button size="icon" variant="ghost" className="text-white h-8 w-8 hover:bg-white/20 hover:text-white">
-                                        <ZoomIn className="h-4 w-4" />
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent className="max-w-3xl p-0 bg-transparent border-0">
-                                    <DialogHeader className="sr-only">
-                                      <DialogTitle>Zoomed Image</DialogTitle>
-                                      <DialogDescription>{image.prompt}</DialogDescription>
-                                    </DialogHeader>
-                                    <img
-                                        src={image.url}
-                                        alt={image.prompt}
-                                        className="w-full h-auto rounded-lg"
-                                    />
-                                </DialogContent>
-                            </Dialog>
-                            <Button asChild size="icon" variant="ghost" className="text-white h-8 w-8 hover:bg-white/20 hover:text-white">
-                                <a href={image.url} download={`${image.prompt.slice(0, 30).replace(/\s/g, '_') || 'ai-generated-image'}.png`}>
-                                    <Download className="h-4 w-4" />
-                                </a>
-                            </Button>
-                            <Button onClick={handleSave} size="icon" variant="ghost" className="text-white h-8 w-8 hover:bg-white/20 hover:text-white">
-                                <Save className="h-4 w-4" />
-                            </Button>
+                {generatedImages.map((image) => (
+                    <Card key={image.id} className="overflow-hidden">
+                        <div className="aspect-square bg-muted">
+                           <img
+                              src={image.url}
+                              alt={image.prompt}
+                              className="w-full h-full object-cover"
+                          />
                         </div>
-                        <p className="text-white text-sm line-clamp-2">{image.prompt}</p>
-                    </div>
-                </div>
+                        <div className="p-4">
+                            <p className="text-sm text-muted-foreground line-clamp-2 h-10">{image.prompt}</p>
+                            <div className="flex justify-end gap-2 mt-2">
+                                <Button asChild size="icon" variant="ghost">
+                                    <a href={image.url} download={`${image.prompt.slice(0, 30).replace(/\s/g, '_') || 'ai-generated-image'}.png`}>
+                                        <Download className="h-4 w-4" />
+                                    </a>
+                                </Button>
+                                <Button onClick={handleSave} size="icon" variant="ghost">
+                                    <Save className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+                    </Card>
                 ))}
             </div>
         </div>

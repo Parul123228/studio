@@ -117,8 +117,8 @@ export async function generateImageAction(input: GenerateImageInput): Promise<{ 
 
     try {
         const output = await generateImage(input);
-        if (!output || !output.media) {
-            return { output: null, error: 'Image generation failed. Please try again.' };
+        if (!output || !output.media || !output.media.startsWith('data:image')) {
+            return { output: null, error: 'Image generation failed or returned invalid data. Please try again.' };
         }
         return { output, error: null };
     } catch (error) {
