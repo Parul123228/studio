@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -35,7 +36,7 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { generateImageAction } from "@/app/actions";
-import { Loader, Wand2, Download, Save, ZoomIn } from "lucide-react";
+import { Loader, Wand2, Download, Save, ZoomIn, Image as ImageIcon } from "lucide-react";
 
 const formSchema = z.object({
   prompt: z.string().min(10, "Prompt must be at least 10 characters long."),
@@ -51,20 +52,9 @@ type GeneratedImage = {
   url: string;
 };
 
-const initialImages = [
-  { id: 1, prompt: "A futuristic city skyline at dusk", url: "https://placehold.co/1024x1024.png", hint: "futuristic city" },
-  { id: 2, prompt: "A mystical forest with glowing mushrooms", url: "https://placehold.co/1024x1024.png", hint: "glowing forest" },
-  { id: 3, prompt: "A robot reading a book in a library", url: "https://placehold.co/1024x1024.png", hint: "robot library" },
-  { id: 4, prompt: "An astronaut floating in space with nebulae", url: "https://placehold.co/1024x1024.png", hint: "astronaut space" },
-  { id: 5, prompt: "A dragon flying over a mountain range", url: "https://placehold.co/1024x1024.png", hint: "dragon mountain" },
-  { id: 6, prompt: "A serene beach with bioluminescent waves", url: "https://placehold.co/1024x1024.png", hint: "bioluminescent beach" },
-];
-
 const ImageGeneratorSection = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>(
-    initialImages.map(img => ({...img, url: img.url}))
-  );
+  const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
   const { toast } = useToast();
 
   const form = useForm<FormValues>({
@@ -212,13 +202,22 @@ const ImageGeneratorSection = () => {
         <div className="lg:col-span-2">
             <div className="grid grid-cols-2 gap-4">
                 {isLoading && (
-                    <div
-                        className="col-span-2"
-                    >
+                    <div className="col-span-2">
                         <Card className="w-full aspect-square p-4 flex items-center justify-center border-dashed">
                             <div className="text-center">
                                 <Loader className="mx-auto h-16 w-16 text-muted-foreground mb-4 animate-spin"/>
                                 <h3 className="text-xl mb-2">Generating masterpiece...</h3>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+                {!isLoading && generatedImages.length === 0 && (
+                    <div className="col-span-2">
+                        <Card className="w-full aspect-square p-4 flex items-center justify-center border-dashed bg-muted/20">
+                            <div className="text-center text-muted-foreground">
+                                <ImageIcon className="mx-auto h-16 w-16 mb-4" />
+                                <h3 className="text-xl font-semibold mb-2 text-foreground">Creations will appear here</h3>
+                                <p>Your generated images will be displayed in this space.</p>
                             </div>
                         </Card>
                     </div>
@@ -234,7 +233,7 @@ const ImageGeneratorSection = () => {
                         width={512}
                         height={512}
                         className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                        data-ai-hint={(initialImages.find(i => i.id === image.id)?.hint) || "ai art"}
+                        data-ai-hint="ai art"
                     />
                     <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-2">
                         <div className="flex justify-end gap-1">
