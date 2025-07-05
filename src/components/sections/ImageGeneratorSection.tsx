@@ -34,15 +34,9 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-type GeneratedImage = {
-  id: number;
-  prompt: string;
-  url: string;
-};
-
 const ImageGeneratorSection = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
+  const [generatedImage, setGeneratedImage] = useState<{ url: string; prompt: string } | null>(null);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -56,6 +50,7 @@ const ImageGeneratorSection = () => {
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setIsLoading(true);
+    setGeneratedImage(null); // Clear previous image
 
     try {
         const result = await generateImageAction({
@@ -70,11 +65,10 @@ const ImageGeneratorSection = () => {
                 variant: "destructive",
             });
         } else {
-            const newImage: GeneratedImage = { id: Date.now(), prompt: data.prompt, url: result.output.media };
-            setGeneratedImages(prevImages => [newImage, ...prevImages]);
+            setGeneratedImage({ url: result.output.media, prompt: data.prompt });
             toast({
                 title: "Image Generated Successfully!",
-                description: "Your creation has been added to the gallery.",
+                description: "Your creation has appeared.",
             });
         }
     } catch (e) {
@@ -180,53 +174,38 @@ const ImageGeneratorSection = () => {
         </div>
 
         <div className="lg:col-span-2">
-            <Card className="w-full min-h-[500px] max-h-[70vh] p-4 border-dashed bg-muted/20">
-                {generatedImages.length === 0 ? (
-                    <div className="flex items-center justify-center h-full">
-                        {isLoading ? (
-                            <div className="text-center text-muted-foreground">
-                                <Loader className="mx-auto h-16 w-16 mb-4 animate-spin"/>
-                                <h3 className="text-xl mb-2 text-foreground">Generating masterpiece...</h3>
+            <Card className="w-full min-h-[500px] p-4 border-dashed bg-muted/20 flex items-center justify-center">
+                {isLoading ? (
+                    <div className="text-center text-muted-foreground">
+                        <Loader className="mx-auto h-16 w-16 mb-4 animate-spin"/>
+                        <h3 className="text-xl mb-2 text-foreground">Generating masterpiece...</h3>
+                    </div>
+                ) : generatedImage ? (
+                    <div className="group relative overflow-hidden rounded-lg aspect-square max-w-full max-h-full">
+                        <img
+                            src={generatedImage.url}
+                            alt={generatedImage.prompt}
+                            className="w-full h-full object-contain"
+                        />
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity p-2 flex flex-col justify-end">
+                            <p className="text-white text-xs line-clamp-3 mb-2">{generatedImage.prompt}</p>
+                            <div className="flex justify-end gap-2">
+                                <Button asChild size="icon" className="h-9 w-9">
+                                    <a href={generatedImage.url} download={`${generatedImage.prompt.slice(0, 30).replace(/\s/g, '_') || 'ai-generated-image'}.png`}>
+                                        <Download className="h-4 w-4" />
+                                    </a>
+                                </Button>
+                                <Button onClick={handleSave} size="icon" className="h-9 w-9">
+                                    <Save className="h-4 w-4" />
+                                </Button>
                             </div>
-                        ) : (
-                            <div className="text-center text-muted-foreground">
-                                <ImageIcon className="mx-auto h-16 w-16 mb-4" />
-                                <h3 className="text-xl font-semibold mb-2 text-foreground">Creations will appear here</h3>
-                                <p>Your generated images will be displayed in this space.</p>
-                            </div>
-                        )}
+                        </div>
                     </div>
                 ) : (
-                    <div className="h-full overflow-y-auto pr-2">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {isLoading && (
-                                <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
-                                    <Loader className="h-10 w-10 animate-spin text-muted-foreground"/>
-                                </div>
-                            )}
-                            {generatedImages.map((image) => (
-                                <div key={image.id} className="group relative overflow-hidden rounded-lg aspect-square">
-                                    <img
-                                        src={image.url}
-                                        alt={image.prompt}
-                                        className="w-full h-full object-cover"
-                                    />
-                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity p-2 flex flex-col justify-end">
-                                      <p className="text-white text-xs line-clamp-3 mb-2">{image.prompt}</p>
-                                      <div className="flex justify-end gap-2">
-                                        <Button asChild size="icon" className="h-9 w-9">
-                                            <a href={image.url} download={`${image.prompt.slice(0, 30).replace(/\s/g, '_') || 'ai-generated-image'}.png`}>
-                                                <Download className="h-4 w-4" />
-                                            </a>
-                                        </Button>
-                                        <Button onClick={handleSave} size="icon" className="h-9 w-9">
-                                            <Save className="h-4 w-4" />
-                                        </Button>
-                                      </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                    <div className="text-center text-muted-foreground">
+                        <ImageIcon className="mx-auto h-16 w-16 mb-4" />
+                        <h3 className="text-xl font-semibold mb-2 text-foreground">Creations will appear here</h3>
+                        <p>Your generated images will be displayed in this space.</p>
                     </div>
                 )}
             </Card>
