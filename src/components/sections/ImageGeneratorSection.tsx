@@ -36,7 +36,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 const ImageGeneratorSection = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [generatedImage, setGeneratedImage] = useState<{ url: string; prompt: string } | null>(null);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -52,28 +52,25 @@ const ImageGeneratorSection = () => {
     setIsLoading(true);
     setGeneratedImage(null); // Clear previous image
 
-    try {
-        const imageUrl = await generateImageAction({
-            prompt: data.prompt,
-            style: data.style,
-        });
+    const result = await generateImageAction({
+        prompt: data.prompt,
+        style: data.style,
+    });
 
-        setGeneratedImage({ url: imageUrl, prompt: data.prompt });
+    setIsLoading(false);
+
+    if (result.error) {
+        toast({
+            title: "Error Generating Image",
+            description: result.error,
+            variant: "destructive",
+        });
+    } else if (result.imageUrl) {
+        setGeneratedImage(result.imageUrl);
         toast({
             title: "Image Generated Successfully!",
             description: "Your creation has appeared.",
         });
-
-    } catch (e) {
-        console.error("An unexpected error occurred:", e);
-        const errorMessage = e instanceof Error ? e.message : "An unexpected error occurred.";
-        toast({
-            title: "Error Generating Image",
-            description: errorMessage,
-            variant: "destructive",
-        });
-    } finally {
-        setIsLoading(false);
     }
   };
   
@@ -83,6 +80,8 @@ const ImageGeneratorSection = () => {
         description: "The ability to save images to your profile is coming soon."
     })
   }
+  
+  const currentPrompt = form.getValues("prompt");
 
   return (
     <section className="w-full">
@@ -177,15 +176,15 @@ const ImageGeneratorSection = () => {
                 ) : generatedImage ? (
                     <div className="group relative overflow-hidden rounded-lg aspect-square max-w-full max-h-full">
                         <img
-                            src={generatedImage.url}
-                            alt={generatedImage.prompt}
+                            src={generatedImage}
+                            alt={currentPrompt}
                             className="w-full h-full object-contain"
                         />
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity p-2 flex flex-col justify-end">
-                            <p className="text-white text-xs line-clamp-3 mb-2">{generatedImage.prompt}</p>
+                            <p className="text-white text-xs line-clamp-3 mb-2">{currentPrompt}</p>
                             <div className="flex justify-end gap-2">
                                 <Button asChild size="icon" className="h-9 w-9">
-                                    <a href={generatedImage.url} download={`${generatedImage.prompt.slice(0, 30).replace(/\s/g, '_') || 'ai-generated-image'}.png`}>
+                                    <a href={generatedImage} download={`${currentPrompt.slice(0, 30).replace(/\s/g, '_') || 'ai-generated-image'}.png`}>
                                         <Download className="h-4 w-4" />
                                     </a>
                                 </Button>

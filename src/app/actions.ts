@@ -107,33 +107,31 @@ export async function suggestToolsAction(): Promise<SuggestToolOutput[]> {
   }
 }
 
-export async function generateImageAction(input: GenerateImageInput): Promise<string> {
+export async function generateImageAction(input: GenerateImageInput): Promise<{ imageUrl?: string; error?: string }> {
   // Handle case where API key is not configured
   if (!process.env.GOOGLE_API_KEY || process.env.GOOGLE_API_KEY.includes('YOUR_')) {
-    console.warn('Google API Key not configured. Returning a placeholder image for development.');
+    console.warn('AI features are disabled. GOOGLE_API_KEY is not configured. Returning a placeholder.');
+    // To avoid breaking the UI, we return a placeholder image instead of an error.
     await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate generation time
-    return 'https://placehold.co/1024x1024.png';
+    return { imageUrl: 'https://placehold.co/1024x1024.png' };
   }
 
   // Handle case where API key is configured
   try {
     const output = await generateImage(input);
 
-    // The genkit flow already has output schema validation.
-    // We do a stricter check here to ensure it's a valid image data URI.
     if (!output || !output.media || !output.media.startsWith('data:image')) {
-       throw new Error('The AI model did not return a valid image. Please try a different prompt.');
+       return { error: 'The AI model did not return a valid image. Please try a different prompt.' };
     }
 
     // Return the media URL directly on success
-    return output.media;
+    return { imageUrl: output.media };
     
   } catch (error) {
     console.error('Error in generateImageAction:', error);
     const errorMessage =
       error instanceof Error ? error.message : 'An unexpected error occurred during image generation.';
-    // Throw an error to be caught by the frontend
-    throw new Error(errorMessage);
+    return { error: errorMessage };
   }
 }
 
