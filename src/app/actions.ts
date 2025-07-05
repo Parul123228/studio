@@ -110,10 +110,10 @@ export async function suggestToolsAction(): Promise<SuggestToolOutput[]> {
 export async function generateImageAction(input: GenerateImageInput): Promise<{ imageUrl?: string; error?: string }> {
   // Handle case where API key is not configured
   if (!process.env.GOOGLE_API_KEY || process.env.GOOGLE_API_KEY.includes('YOUR_')) {
-    console.warn('AI features are disabled. GOOGLE_API_KEY is not configured. Returning a placeholder.');
-    // To avoid breaking the UI, we return a placeholder image instead of an error.
-    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate generation time
-    return { imageUrl: 'https://placehold.co/1024x1024.png' };
+    const errorMsg = 'AI features are disabled. GOOGLE_API_KEY is not configured. Please add it to your .env file.';
+    console.warn(errorMsg);
+    // Return an error to be displayed in the UI.
+    return { error: errorMsg };
   }
 
   // Handle case where API key is configured
