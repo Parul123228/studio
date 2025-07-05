@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -43,7 +42,7 @@ type GeneratedImage = {
 
 const ImageGeneratorSection = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
+  const [generatedImage, setGeneratedImage] = useState<GeneratedImage | null>(null);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -57,6 +56,7 @@ const ImageGeneratorSection = () => {
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setIsLoading(true);
+    setGeneratedImage(null); // Clear previous image while generating
 
     try {
         const result = await generateImageAction({
@@ -72,7 +72,7 @@ const ImageGeneratorSection = () => {
             });
         } else {
             const newImage = { id: Date.now(), prompt: data.prompt, url: result.output.media };
-            setGeneratedImages(prevImages => [newImage, ...prevImages]);
+            setGeneratedImage(newImage);
             toast({
                 title: "Image Generated Successfully!",
                 description: "Your creation has come to life.",
@@ -181,50 +181,40 @@ const ImageGeneratorSection = () => {
         </div>
 
         <div className="lg:col-span-2">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {isLoading && generatedImages.length === 0 && (
-                    <div className="col-span-full">
-                        <Card className="w-full aspect-square p-4 flex items-center justify-center border-dashed">
-                            <div className="text-center">
-                                <Loader className="mx-auto h-16 w-16 text-muted-foreground mb-4 animate-spin"/>
-                                <h3 className="text-xl mb-2">Generating masterpiece...</h3>
-                            </div>
-                        </Card>
+            <Card className="w-full aspect-square p-4 flex items-center justify-center border-dashed relative overflow-hidden group bg-muted/20">
+                {isLoading && (
+                    <div className="text-center text-muted-foreground">
+                        <Loader className="mx-auto h-16 w-16 mb-4 animate-spin"/>
+                        <h3 className="text-xl mb-2 text-foreground">Generating masterpiece...</h3>
                     </div>
                 )}
-                {!isLoading && generatedImages.length === 0 && (
-                    <div className="col-span-full">
-                        <Card className="w-full min-h-[400px] lg:aspect-square p-4 flex items-center justify-center border-dashed bg-muted/20">
-                            <div className="text-center text-muted-foreground">
-                                <ImageIcon className="mx-auto h-16 w-16 mb-4" />
-                                <h3 className="text-xl font-semibold mb-2 text-foreground">Creations will appear here</h3>
-                                <p>Your generated images will be displayed in this space.</p>
-                            </div>
-                        </Card>
+                {!isLoading && !generatedImage && (
+                    <div className="text-center text-muted-foreground">
+                        <ImageIcon className="mx-auto h-16 w-16 mb-4" />
+                        <h3 className="text-xl font-semibold mb-2 text-foreground">Creations will appear here</h3>
+                        <p>Your generated images will be displayed in this space.</p>
                     </div>
                 )}
-                {generatedImages.map((image) => (
-                    <Card key={image.id} className="overflow-hidden group relative">
-                        <img
-                            src={image.url}
-                            alt={image.prompt}
-                            className="w-full h-full object-cover aspect-square"
-                        />
-                         <div className="absolute bottom-0 left-0 right-0 p-4">
-                           <div className="flex justify-end gap-2">
-                               <Button asChild size="icon" variant="default">
-                                   <a href={image.url} download={`${image.prompt.slice(0, 30).replace(/\s/g, '_') || 'ai-generated-image'}.png`}>
-                                       <Download className="h-4 w-4" />
-                                   </a>
-                               </Button>
-                               <Button onClick={handleSave} size="icon" variant="default">
-                                   <Save className="h-4 w-4" />
-                               </Button>
-                           </div>
-                        </div>
-                    </Card>
-                ))}
-            </div>
+                {generatedImage && !isLoading && (
+                  <>
+                    <img
+                        src={generatedImage.url}
+                        alt={generatedImage.prompt}
+                        className="w-full h-full object-cover"
+                    />
+                     <div className="absolute bottom-4 right-4 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                       <Button asChild size="icon" variant="default" className="h-12 w-12">
+                           <a href={generatedImage.url} download={`${generatedImage.prompt.slice(0, 30).replace(/\s/g, '_') || 'ai-generated-image'}.png`}>
+                               <Download className="h-6 w-6" />
+                           </a>
+                       </Button>
+                       <Button onClick={handleSave} size="icon" variant="default" className="h-12 w-12">
+                           <Save className="h-6 w-6" />
+                       </Button>
+                   </div>
+                  </>
+                )}
+            </Card>
         </div>
       </div>
     </section>
