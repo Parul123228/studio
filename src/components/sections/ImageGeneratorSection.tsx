@@ -53,29 +53,23 @@ const ImageGeneratorSection = () => {
     setGeneratedImage(null); // Clear previous image
 
     try {
-        const result = await generateImageAction({
+        const imageUrl = await generateImageAction({
             prompt: data.prompt,
             style: data.style,
         });
 
-        if (result.error || !result.output || !result.output.media) {
-            toast({
-                title: "Error Generating Image",
-                description: result.error || "The AI returned an empty or invalid image. Please try a different prompt.",
-                variant: "destructive",
-            });
-        } else {
-            setGeneratedImage({ url: result.output.media, prompt: data.prompt });
-            toast({
-                title: "Image Generated Successfully!",
-                description: "Your creation has appeared.",
-            });
-        }
+        setGeneratedImage({ url: imageUrl, prompt: data.prompt });
+        toast({
+            title: "Image Generated Successfully!",
+            description: "Your creation has appeared.",
+        });
+
     } catch (e) {
         console.error("An unexpected error occurred:", e);
+        const errorMessage = e instanceof Error ? e.message : "An unexpected error occurred.";
         toast({
-            title: "An Unexpected Error Occurred",
-            description: "Something went wrong on our end. Please try again later.",
+            title: "Error Generating Image",
+            description: errorMessage,
             variant: "destructive",
         });
     } finally {
