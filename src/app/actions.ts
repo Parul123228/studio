@@ -30,7 +30,6 @@ export async function submitTransactionAction(formData: FormData) {
     return { error: 'Missing required fields.' };
   }
   
-  // Prevent duplicate submissions
   if (pendingRequests.some(req => req.userId === userId)) {
     return { error: 'You already have a pending submission.' };
   }
@@ -108,24 +107,37 @@ export async function suggestToolsAction(): Promise<SuggestToolOutput[]> {
   }
 }
 
-export async function generateImageAction(input: GenerateImageInput): Promise<{ output: GenerateImageOutput | null, error: string | null }> {
-    if (!process.env.GOOGLE_API_KEY || process.env.GOOGLE_API_KEY.includes('YOUR_')) {
-        console.warn("Google API Key not configured. Returning a placeholder image for development.");
-        await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate generation time
-        return { output: { media: 'https://placehold.co/1024x1024.png' }, error: null };
+export async function generateImageAction(input: GenerateImageInput): Promise<{ output: GenerateImageOutput | null; error: string | null }> {
+  // Handle case where API key is not configured
+  if (!process.env.GOOGLE_API_KEY || process.env.GOOGLE_API_KEY.includes('YOUR_')) {
+    console.warn('Google API Key not configured. Returning a placeholder image for development.');
+    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate generation time
+    return { output: { media: 'https://placehold.co/1024x1024.png' }, error: null };
+  }
+
+  // Handle case where API key is configured
+  try {
+    const output = await generateImage(input);
+
+    // The genkit flow already has output schema validation.
+    // We just need to ensure we got a result.
+    if (!output || !output.media) {
+      return {
+        output: null,
+        error: 'The AI model did not return an image. Please try a different prompt.',
+      };
     }
 
-    try {
-        const output = await generateImage(input);
-        if (!output || !output.media || !output.media.startsWith('data:image')) {
-            return { output: null, error: 'Image generation failed or returned invalid data. Please try again.' };
-        }
-        return { output, error: null };
-    } catch (error) {
-        console.error("Error generating image:", error);
-        const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred during image generation.';
-        return { output: null, error: errorMessage };
-    }
+    // The result is { media: 'data:image/...' }
+    // We wrap it in the expected response structure.
+    return { output, error: null };
+    
+  } catch (error) {
+    console.error('Error in generateImageAction:', error);
+    const errorMessage =
+      error instanceof Error ? error.message : 'An unexpected error occurred during image generation.';
+    return { output: null, error: errorMessage };
+  }
 }
 
 export async function generateSpeechAction(input: GenerateSpeechInput): Promise<{ output: GenerateSpeechOutput | null, error: string | null }> {
