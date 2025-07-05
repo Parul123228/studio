@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { LogOut, Menu, UserCircle, Bot, Image as ImageIcon, LayoutDashboard, User, Rocket } from "lucide-react";
+import { LogOut, Menu, UserCircle, Bot, Image as ImageIcon, LayoutDashboard, User, Rocket, Loader } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,11 +33,13 @@ const Header = () => {
   const [scrolled, setScrolled] = React.useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [isMembershipModalOpen, setMembershipModalOpen] = React.useState(false);
+  const [isLoggingOut, setIsLoggingOut] = React.useState(false);
 
   const { user, logout } = useAuth();
   const router = useRouter();
 
   const handleLogout = () => {
+    setIsLoggingOut(true);
     logout();
     router.push('/');
   };
@@ -130,9 +132,18 @@ const Header = () => {
                     <span>Profile</span>
                     <Badge variant={getPlanVariant()} className="ml-auto">{user.plan}</Badge>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleLogout}>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
+                  <DropdownMenuItem onClick={handleLogout} disabled={isLoggingOut}>
+                    {isLoggingOut ? (
+                        <>
+                            <Loader className="mr-2 h-4 w-4 animate-spin" />
+                            <span>Logging out...</span>
+                        </>
+                    ) : (
+                        <>
+                            <LogOut className="mr-2 h-4 w-4" />
+                            <span>Log out</span>
+                        </>
+                    )}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

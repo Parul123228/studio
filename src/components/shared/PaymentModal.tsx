@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Check, Copy } from "lucide-react";
+import { Check, Copy, Loader } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -28,6 +28,7 @@ const UPI_NAME = "NextGenAI";
 export default function PaymentModal({ open, onOpenChange, planName, planPrice }: PaymentModalProps) {
   const router = useRouter();
   const [hasCopied, setHasCopied] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const { toast } = useToast();
 
   const handleCopyToClipboard = () => {
@@ -38,6 +39,7 @@ export default function PaymentModal({ open, onOpenChange, planName, planPrice }
   };
   
   const handleDone = () => {
+    setIsRedirecting(true);
     onOpenChange(false);
     router.push('/profile');
   };
@@ -78,8 +80,15 @@ export default function PaymentModal({ open, onOpenChange, planName, planPrice }
             <p className="text-xs text-muted-foreground text-center">
                 After payment, go to your Profile page and submit the UPI Transaction ID to activate your plan.
             </p>
-            <Button onClick={handleDone} className="w-full">
-                I have paid, take me to my Profile
+            <Button onClick={handleDone} className="w-full" disabled={isRedirecting}>
+              {isRedirecting ? (
+                  <>
+                      <Loader className="mr-2 h-4 w-4 animate-spin" />
+                      Please wait...
+                  </>
+              ) : (
+                  "I have paid, take me to my Profile"
+              )}
             </Button>
         </DialogFooter>
       </DialogContent>

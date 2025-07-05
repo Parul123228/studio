@@ -125,7 +125,7 @@ export default function AdminPage() {
           setError('Incorrect password. Please try again.');
         }
         setIsLoggingIn(false);
-    }, 500);
+    }, 200);
   };
 
   if (isAuthenticated) {
