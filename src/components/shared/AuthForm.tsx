@@ -7,6 +7,8 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Loader } from "lucide-react";
 
 type AuthFormProps = {
   type: "login" | "signup";
@@ -15,6 +17,7 @@ type AuthFormProps = {
 export default function AuthForm({ type }: AuthFormProps) {
   const { login } = useAuth();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const titles = {
     login: { 
@@ -37,6 +40,7 @@ export default function AuthForm({ type }: AuthFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     // In a real app, you'd handle form data. Here, we just log in the mock user.
     login();
     router.push('/dashboard');
@@ -60,7 +64,16 @@ export default function AuthForm({ type }: AuthFormProps) {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
-          <Button type="submit" className="w-full">{titles[type].buttonText}</Button>
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? (
+                <>
+                    <Loader className="mr-2 h-4 w-4 animate-spin" />
+                    Please wait...
+                </>
+            ) : (
+                titles[type].buttonText
+            )}
+          </Button>
           <p className="text-sm text-muted-foreground">
             {titles[type].footerText}{" "}
             <Link href={titles[type].footerLink} className="text-primary hover:underline">

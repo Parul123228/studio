@@ -10,10 +10,14 @@ import { submitTransactionAction } from "@/app/actions";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useState, useRef } from "react";
+import { Loader } from "lucide-react";
 
 const UpgradeForm = () => {
     const { user } = useAuth();
     const { toast } = useToast();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const formRef = useRef<HTMLFormElement>(null);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -24,13 +28,20 @@ const UpgradeForm = () => {
             return;
         }
 
-        const result = await submitTransactionAction(formData);
+        setIsSubmitting(true);
+        try {
+            const result = await submitTransactionAction(formData);
 
-        if (result.error) {
-            toast({ title: 'Submission Failed', description: result.error, variant: 'destructive' });
-        } else {
-            toast({ title: 'Submission Successful', description: 'Your request is being processed. Please allow up to 24 hours for your plan to be upgraded.' });
-            // Optionally clear form or give other feedback
+            if (result.error) {
+                toast({ title: 'Submission Failed', description: result.error, variant: 'destructive' });
+            } else {
+                toast({ title: 'Submission Successful', description: 'Your request is being processed. Please allow up to 24 hours for your plan to be upgraded.' });
+                formRef.current?.reset();
+            }
+        } catch (e) {
+             toast({ title: 'Error', description: 'An unexpected error occurred.', variant: 'destructive' });
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -42,7 +53,7 @@ const UpgradeForm = () => {
                     After completing a payment from the Plans page, select the plan you paid for and submit your UPI Transaction ID below.
                 </CardDescription>
             </CardHeader>
-            <form onSubmit={handleSubmit}>
+            <form ref={formRef} onSubmit={handleSubmit}>
                 <CardContent className="space-y-6">
                     <input type="hidden" name="userId" value={user?.uid || ''} />
                     <input type="hidden" name="userEmail" value={user?.email || ''} />
@@ -65,7 +76,16 @@ const UpgradeForm = () => {
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <Button type="submit">Submit for Approval</Button>
+                    <Button type="submit" disabled={isSubmitting}>
+                         {isSubmitting ? (
+                            <>
+                                <Loader className="mr-2 h-4 w-4 animate-spin" />
+                                Submitting...
+                            </>
+                        ) : (
+                            "Submit for Approval"
+                        )}
+                    </Button>
                 </CardFooter>
             </form>
         </Card>

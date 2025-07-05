@@ -9,6 +9,7 @@ import { approveUserAction, getPendingApprovalsAction } from '@/app/actions';
 import { useAuth } from '@/contexts/auth-context';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
+import { Loader } from 'lucide-react';
 
 interface SubscriptionRequest {
   id: string;
@@ -22,6 +23,7 @@ interface SubscriptionRequest {
 const AdminDashboard = () => {
     const [requests, setRequests] = useState<SubscriptionRequest[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [approvingId, setApprovingId] = useState<string | null>(null);
     const { toast } = useToast();
 
     useEffect(() => {
@@ -36,12 +38,19 @@ const AdminDashboard = () => {
     }, []);
 
     const handleApprove = async (requestId: string) => {
-        const result = await approveUserAction(requestId);
-        if (result.success) {
-            setRequests(prev => prev.filter(req => req.id !== requestId));
-            toast({ title: 'Success', description: `Request approved. The user's plan must be updated manually if not using a real database.`});
-        } else {
-            toast({ title: 'Error', description: result.error, variant: 'destructive'});
+        setApprovingId(requestId);
+        try {
+            const result = await approveUserAction(requestId);
+            if (result.success) {
+                setRequests(prev => prev.filter(req => req.id !== requestId));
+                toast({ title: 'Success', description: `Request approved. The user's plan must be updated manually if not using a real database.`});
+            } else {
+                toast({ title: 'Error', description: result.error, variant: 'destructive'});
+            }
+        } catch (error) {
+             toast({ title: 'Error', description: 'An unexpected error occurred.', variant: 'destructive'});
+        } finally {
+            setApprovingId(null);
         }
     };
 
@@ -75,7 +84,16 @@ const AdminDashboard = () => {
                                     <TableCell>{req.transactionId}</TableCell>
                                     <TableCell>{req.createdAt.toLocaleString()}</TableCell>
                                     <TableCell className="text-right">
-                                        <Button onClick={() => handleApprove(req.id)}>Approve</Button>
+                                        <Button onClick={() => handleApprove(req.id)} disabled={!!approvingId}>
+                                            {approvingId === req.id ? (
+                                                <>
+                                                    <Loader className="mr-2 h-4 w-4 animate-spin" />
+                                                    Approving...
+                                                </>
+                                            ) : (
+                                                "Approve"
+                                            )}
+                                        </Button>
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -92,15 +110,22 @@ export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [error, setError] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'parul123#@') {
-      setIsAuthenticated(true);
-      setError('');
-    } else {
-      setError('Incorrect password. Please try again.');
-    }
+    setIsLoggingIn(true);
+    setError('');
+
+    // Simulate network delay to show loading state
+    setTimeout(() => {
+        if (password === 'parul123#@') {
+          setIsAuthenticated(true);
+        } else {
+          setError('Incorrect password. Please try again.');
+        }
+        setIsLoggingIn(false);
+    }, 500);
   };
 
   if (isAuthenticated) {
@@ -125,11 +150,21 @@ export default function AdminPage() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Enter password"
+                        disabled={isLoggingIn}
                     />
                     {error && <p className="text-sm text-destructive">{error}</p>}
                 </CardContent>
                 <CardFooter>
-                    <Button type="submit" className="w-full">Login</Button>
+                    <Button type="submit" className="w-full" disabled={isLoggingIn}>
+                        {isLoggingIn ? (
+                            <>
+                                <Loader className="mr-2 h-4 w-4 animate-spin" />
+                                Logging In...
+                            </>
+                        ) : (
+                            "Login"
+                        )}
+                    </Button>
                 </CardFooter>
             </form>
         </Card>
