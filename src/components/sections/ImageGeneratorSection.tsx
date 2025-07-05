@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -14,8 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import {
   Form,
   FormControl,
@@ -32,7 +31,6 @@ import { useRouter } from "next/navigation";
 const formSchema = z.object({
   prompt: z.string().min(10, "Prompt must be at least 10 characters long."),
   style: z.enum(["Cyberpunk", "Dreamy", "Oil Paint"]),
-  size: z.enum(["1:1", "9:16", "4:3"]),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -54,13 +52,11 @@ const ImageGeneratorSection = () => {
     defaultValues: {
       prompt: "",
       style: "Cyberpunk",
-      size: "1:1",
     },
   });
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setIsLoading(true);
-    setGeneratedImages([]);
 
     try {
         const result = await generateImageAction({
@@ -76,7 +72,7 @@ const ImageGeneratorSection = () => {
             });
         } else {
             const newImage = { id: Date.now(), prompt: data.prompt, url: result.output.media };
-            setGeneratedImages([newImage]);
+            setGeneratedImages(prevImages => [newImage, ...prevImages]);
             toast({
                 title: "Image Generated Successfully!",
                 description: "Your creation has come to life.",
@@ -165,34 +161,6 @@ const ImageGeneratorSection = () => {
                     </FormItem>
                   )}
                 />
-
-                <FormField
-                  control={form.control}
-                  name="size"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-lg">Aspect Ratio</FormLabel>
-                      <FormControl>
-                        <RadioGroup
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          className="grid grid-cols-3 gap-4"
-                        >
-                          {["1:1", "9:16", "4:3"].map((size) => (
-                            <FormItem key={size}>
-                              <FormControl>
-                                <RadioGroupItem value={size} id={size} className="sr-only" />
-                              </FormControl>
-                              <Label htmlFor={size} className="block w-full p-4 text-center rounded-lg border-2 border-input cursor-pointer transition-all hover:border-primary has-[:checked]:border-primary has-[:checked]:text-primary">
-                                {size}
-                              </Label>
-                            </FormItem>
-                          ))}
-                        </RadioGroup>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
                 
                 <Button type="submit" disabled={isLoading} className="w-full text-lg py-6">
                   {isLoading ? (
@@ -214,7 +182,7 @@ const ImageGeneratorSection = () => {
 
         <div className="lg:col-span-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {isLoading && (
+                {isLoading && generatedImages.length === 0 && (
                     <div className="col-span-full">
                         <Card className="w-full aspect-square p-4 flex items-center justify-center border-dashed">
                             <div className="text-center">
