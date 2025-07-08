@@ -56,11 +56,11 @@ export default function AuthForm({ type }: AuthFormProps) {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="parul@example.com" required defaultValue="parul@example.com" />
+            <Input id="email" type="email" placeholder="parul@example.com" required />
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" required defaultValue="password123" />
+            <Input id="password" type="password" placeholder="Enter your password" required />
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
