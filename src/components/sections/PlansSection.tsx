@@ -6,7 +6,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Check } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import PaymentModal from "../shared/PaymentModal";
+import dynamic from "next/dynamic";
+
+const PaymentModal = dynamic(() => import('../shared/PaymentModal'), {
+    ssr: false,
+});
 
 const plans = [
   {
@@ -77,12 +81,14 @@ const PlansSection = () => {
 
     return (
         <>
-            <PaymentModal 
-                open={!!selectedPlan} 
-                onOpenChange={() => setSelectedPlan(null)}
-                planName={selectedPlan?.name || ''}
-                planPrice={selectedPlan?.price.replace('₹', '') || ''}
-            />
+            {selectedPlan && (
+                <PaymentModal 
+                    open={!!selectedPlan} 
+                    onOpenChange={() => setSelectedPlan(null)}
+                    planName={selectedPlan?.name || ''}
+                    planPrice={selectedPlan?.price.replace('₹', '') || ''}
+                />
+            )}
             <section id="plans" className="w-full">
                 <div className="text-center mb-12">
                     <h2 className="text-4xl font-bold tracking-tight sm:text-6xl">Choose Your Plan</h2>

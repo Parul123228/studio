@@ -4,13 +4,20 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
-import UsageChart from "@/components/shared/UsageChart";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Image as ImageIcon, LineChart, Star, Save } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect } from "react";
+import dynamic from "next/dynamic";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const UsageChart = dynamic(() => import('@/components/shared/UsageChart'), {
+  ssr: false,
+  loading: () => <Skeleton className="h-[350px] w-full" />,
+});
+
 
 const mockCreations = [
   { id: 1, prompt: "A cyberpunk city in the rain", url: "https://placehold.co/512x512.png", hint: "cyberpunk rain" },

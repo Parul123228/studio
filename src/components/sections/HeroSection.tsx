@@ -4,10 +4,15 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Sparkles, UserPlus } from 'lucide-react';
-import Orb from "@/components/shared/Orb";
 import Typewriter from "@/components/shared/Typewriter";
 import Link from 'next/link';
 import { useIsMobile } from '@/hooks/use-mobile';
+import dynamic from 'next/dynamic';
+
+const Orb = dynamic(() => import('@/components/shared/Orb'), {
+  ssr: false,
+  loading: () => <div className="absolute inset-0 z-0 h-full w-full opacity-30" />,
+});
 
 const HeroSection = () => {
   const isMobile = useIsMobile();

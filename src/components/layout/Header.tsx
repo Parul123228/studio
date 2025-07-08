@@ -19,8 +19,12 @@ import { useAuth } from "@/contexts/auth-context";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useRouter } from "next/navigation";
 import { Badge } from "../ui/badge";
-import MembershipModal from "../shared/MembershipModal";
 import { useToast } from "@/hooks/use-toast";
+import dynamic from "next/dynamic";
+
+const MembershipModal = dynamic(() => import('../shared/MembershipModal'), {
+    ssr: false,
+});
 
 const navLinks = [
   { href: "/generate", label: "Art Generator", icon: ImageIcon, premium: false },

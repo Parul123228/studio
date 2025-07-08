@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -24,8 +24,10 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { generateImageAction } from "@/app/actions";
-import { Loader, Wand2, Download, Save, Image as ImageIcon, ArrowLeft } from "lucide-react";
+import { Loader, Wand2, Download, Save, Image as ImageIcon, ArrowLeft, Rocket } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-context";
+import Link from "next/link";
 
 const formSchema = z.object({
   prompt: z.string().min(10, "Prompt must be at least 10 characters long."),
@@ -34,11 +36,39 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
+const FREE_GENERATION_LIMIT = 4;
+
+const PremiumPlaceholder = () => (
+    <div className="text-center p-8 border-dashed border-2 rounded-lg max-w-lg mx-auto">
+        <Rocket className="mx-auto h-16 w-16 text-primary mb-4" />
+        <h3 className="text-2xl font-semibold mb-2">Free Limit Reached</h3>
+        <p className="text-muted-foreground mb-6">
+            You've used all your free image generations. Upgrade to create unlimited art.
+        </p>
+        <Button asChild size="lg">
+            <Link href="/plans">View Plans & Upgrade</Link>
+        </Button>
+    </div>
+);
+
+
 const ImageGeneratorSection = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [generationCount, setGenerationCount] = useState(0);
   const { toast } = useToast();
   const router = useRouter();
+  const { user } = useAuth();
+
+  const isFreePlan = user?.plan === 'Free' || !user;
+  const isLocked = isFreePlan && generationCount >= FREE_GENERATION_LIMIT;
+
+  useEffect(() => {
+    if (isFreePlan) {
+      const storedCount = localStorage.getItem('nextgenai-free-generations');
+      setGenerationCount(storedCount ? parseInt(storedCount, 10) : 0);
+    }
+  }, [isFreePlan]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -71,6 +101,12 @@ const ImageGeneratorSection = () => {
             title: "Image Generated Successfully!",
             description: "Your creation has appeared.",
         });
+
+        if (isFreePlan) {
+          const newCount = generationCount + 1;
+          setGenerationCount(newCount);
+          localStorage.setItem('nextgenai-free-generations', newCount.toString());
+        }
     }
   };
   
@@ -105,64 +141,75 @@ const ImageGeneratorSection = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1 p-0">
           <Card className="p-6">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                <FormField
-                  control={form.control}
-                  name="prompt"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-lg">Your Prompt</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="e.g., A glowing jellyfish floating in a futuristic city"
-                          className="min-h-[120px] focus:border-primary"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="style"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-lg">Style</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+            { isLocked ? (
+              <PremiumPlaceholder />
+            ) : (
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                  <FormField
+                    control={form.control}
+                    name="prompt"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-lg">Your Prompt</FormLabel>
                         <FormControl>
-                          <SelectTrigger className="focus:border-primary">
-                            <SelectValue placeholder="Select a style" />
-                          </SelectTrigger>
+                          <Textarea
+                            placeholder="e.g., A glowing jellyfish floating in a futuristic city"
+                            className="min-h-[120px] focus:border-primary"
+                            {...field}
+                          />
                         </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Cyberpunk">Cyberpunk</SelectItem>
-                          <SelectItem value="Dreamy">Dreamy</SelectItem>
-                          <SelectItem value="Oil Paint">Oil Paint</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <Button type="submit" disabled={isLoading} className="w-full text-lg py-6">
-                  {isLoading ? (
-                    <>
-                      <Loader className="mr-2 h-5 w-5 animate-spin" />
-                      Generating...
-                    </>
-                  ) : (
-                    <>
-                      <Wand2 className="mr-2 h-5 w-5" />
-                      Generate
-                    </>
-                  )}
-                </Button>
-              </form>
-            </Form>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="style"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-lg">Style</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="focus:border-primary">
+                              <SelectValue placeholder="Select a style" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Cyberpunk">Cyberpunk</SelectItem>
+                            <SelectItem value="Dreamy">Dreamy</SelectItem>
+                            <SelectItem value="Oil Paint">Oil Paint</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <div className="space-y-2">
+                    <Button type="submit" disabled={isLoading} className="w-full text-lg py-6">
+                      {isLoading ? (
+                        <>
+                          <Loader className="mr-2 h-5 w-5 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Wand2 className="mr-2 h-5 w-5" />
+                          Generate
+                        </>
+                      )}
+                    </Button>
+                    {isFreePlan && (
+                      <p className="text-center text-sm text-muted-foreground">
+                        {Math.max(0, FREE_GENERATION_LIMIT - generationCount)} free generations remaining.
+                      </p>
+                    )}
+                  </div>
+                </form>
+              </Form>
+            )}
           </Card>
         </div>
 
