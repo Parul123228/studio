@@ -10,7 +10,7 @@ import { submitTransactionAction } from "@/app/actions";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Loader } from "lucide-react";
 
 const UpgradeForm = () => {
@@ -96,19 +96,18 @@ export default function ProfilePage() {
   const { user, loading, logout } = useAuth();
   const router = useRouter();
 
-  if (loading) {
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [loading, user, router]);
+
+  if (loading || !user) {
     return (
         <div className="container mx-auto px-4 py-16 sm:py-24 text-center">
             <p>Loading profile...</p>
         </div>
     )
-  }
-
-  if (!user) {
-    if (typeof window !== 'undefined') {
-        router.push('/login');
-    }
-    return null;
   }
   
   const getPlanVariant = () => {

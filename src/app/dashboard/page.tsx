@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Image as ImageIcon, LineChart, Star, Save } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect } from "react";
 
 const mockCreations = [
   { id: 1, prompt: "A cyberpunk city in the rain", url: "https://placehold.co/512x512.png", hint: "cyberpunk rain" },
@@ -22,19 +23,18 @@ export default function DashboardPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
-  if (loading) {
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [loading, user, router]);
+
+  if (loading || !user) {
     return (
       <div className="container mx-auto px-4 py-16 sm:py-24 text-center">
         <p>Loading dashboard...</p>
       </div>
     );
-  }
-
-  if (!user) {
-    if (typeof window !== 'undefined') {
-        router.push('/login');
-    }
-    return null;
   }
   
   const getPlanVariant = () => {
