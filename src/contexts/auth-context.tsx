@@ -114,7 +114,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signup = async (displayName: string, email: string, pass: string) => {
-    if (!auth) throw new Error("Firebase not configured. Cannot sign up.");
+    if (!auth) {
+        // Create a mock user for signup when Firebase is not configured
+        const MOCK_USER = {
+            uid: `mock-user-${new Date().getTime()}`,
+            email: email,
+            displayName: displayName,
+            photoURL: null,
+            plan: 'Free' as const,
+        };
+        localStorage.setItem('nextgenai-user', JSON.stringify(MOCK_USER));
+        // @ts-ignore
+        setUser(MOCK_USER);
+        return;
+    }
     const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
     await updateProfile(userCredential.user, { displayName });
     
