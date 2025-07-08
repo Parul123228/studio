@@ -20,6 +20,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useRouter } from "next/navigation";
 import { Badge } from "../ui/badge";
 import MembershipModal from "../shared/MembershipModal";
+import { useToast } from "@/hooks/use-toast";
 
 const navLinks = [
   { href: "/generate", label: "Art Generator", icon: ImageIcon, premium: false },
@@ -37,11 +38,19 @@ const Header = () => {
 
   const { user, logout } = useAuth();
   const router = useRouter();
+  const { toast } = useToast();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setIsLoggingOut(true);
-    logout();
-    router.push('/');
+    try {
+      await logout();
+      router.push('/');
+    } catch (error) {
+      console.error("Logout failed", error);
+      toast({ title: 'Logout Failed', description: 'An error occurred while logging out.', variant: 'destructive' });
+    } finally {
+        setIsLoggingOut(false);
+    }
   };
   
   React.useEffect(() => {
@@ -112,7 +121,7 @@ const Header = () => {
                     <Avatar>
                       <AvatarImage src={user.photoURL || undefined} alt="User Avatar" />
                       <AvatarFallback>
-                        <UserCircle className="h-6 w-6"/>
+                        {user.displayName ? user.displayName.charAt(0).toUpperCase() : <UserCircle className="h-6 w-6"/>}
                       </AvatarFallback>
                     </Avatar>
                   </Button>

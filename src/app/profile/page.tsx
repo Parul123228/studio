@@ -105,7 +105,6 @@ export default function ProfilePage() {
   }
 
   if (!user) {
-    // Redirect to login if not authenticated
     if (typeof window !== 'undefined') {
         router.push('/login');
     }
@@ -121,6 +120,11 @@ export default function ProfilePage() {
       default:
         return 'outline';
     }
+  }
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/');
   }
 
   return (
@@ -146,7 +150,7 @@ export default function ProfilePage() {
           </div>
         </CardContent>
         <CardFooter>
-            <Button variant="outline" onClick={() => { logout(); router.push('/')}}>Log Out</Button>
+            <Button variant="outline" onClick={handleLogout}>Log Out</Button>
         </CardFooter>
       </Card>
 
