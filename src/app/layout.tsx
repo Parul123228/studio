@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster"
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { AuthProvider } from '@/contexts/auth-context';
+import Head from 'next/head'; // 👈 Add this line
 
 const inter = Inter({
   subsets: ['latin'],
@@ -24,7 +25,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head />
+      {/* 👇 Add Google verification meta inside Head */}
+      <Head>
+        <meta name="google-site-verification" content="rUDmKEaZtlUWj-5HVco63ZPQziQqBsUPbvnxXxBhLEg" />
+      </Head>
       <body className={`${inter.variable} font-body antialiased`}>
         <ThemeProvider
           attribute="class"
