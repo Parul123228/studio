@@ -27,7 +27,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       {/* 👇 Add Google verification meta inside Head */}
       <Head>
-        <meta name="google-site-verification" content="rUDmKEaZtlUWj-5HVco63ZPQziQqBsUPbvnxXxBhLEg" />
+        <meta name=<meta name="google-site-verification" content="rUDmKEaZtlUWj-5HVco63ZPQziQqBsUPbvnxXxBhLEg" />
       </Head>
       <body className={`${inter.variable} font-body antialiased`}>
         <ThemeProvider
